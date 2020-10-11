@@ -1,0 +1,154 @@
+{{define "admin/login.html"}}
+    <!DOCTYPE html>
+    <html lang="ch">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="author" content="chishin" />
+        <title>后台登陆 - {{.config.Title}}</title>
+        <link rel="stylesheet" href="assets/css/bootstrap.css">
+        <script src="assets/js/jquery-1.11.1.min.js"></script>
+        {{if .success}}
+        <meta http-equiv="refresh" content="2; url=/admin">
+        {{end}}
+    </head>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #212529;
+            text-align: left;
+        }
+
+        .logo {
+            float: left;
+        }
+
+        .sidenav {
+            height: 100%;
+            background-color: #2c2e2f;
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+
+        .main {
+            padding: 0px 10px;
+        }
+
+        @media screen and (max-height: 450px) {
+            .sidenav {padding-top: 15px;}
+        }
+
+        @media screen and (max-width: 450px) {
+            .login-form{
+                margin-top: 10%;
+            }
+        }
+
+        @media screen and (min-width: 768px){
+            .main{
+                margin-left: 40%;
+            }
+
+            .sidenav{
+                width: 40%;
+                position: fixed;
+                z-index: 1;
+                top: 0;
+                left: 0;
+            }
+
+            .login-form{
+                margin-top: 80%;
+            }
+        }
+
+        .login-main-text{
+            margin-top: 20%;
+            margin-bottom: 20%;
+            padding: 60px;
+            color: #fff;
+        }
+
+        .login-main-text h2{
+            font-weight: 300;
+            margin-top: 60px;
+            margin-bottom: 20px;
+        }
+
+        form {
+            margin-top: 25px;
+        }
+
+        .btn-block {
+            margin-bottom: 12px;
+        }
+
+        .btn-black{
+            background-color: #2c2e2f !important;
+            color: #fff;
+        }
+
+        .btn-black:hover {
+            color: #fff !important;
+            background-color: #000 !important;
+        }
+
+        .btn-secondary:hover {
+            background-color: #ccc !important;
+        }
+    </style>
+
+    <body class="page-body">
+    <div class="page-container">
+        <div class="sidenav">
+            <div class="login-main-text">
+                <!-- logo -->
+                <div class="logo">
+                    <img src="/assets/images/logo@2x.png" width="100%" alt="" />
+                </div>
+                <h2>后台登陆</h2>
+                <p>使用管理员用户信息登陆{{.config.Title}}</p>
+            </div>
+        </div>
+        <div class="main">
+            <div class="col-md-6 col-sm-12">
+                <div class="login-form">
+                    <form method="post">
+                        <div class="form-group">
+                            <label>用户名</label>
+                            <input type="text" name="username" class="form-control" placeholder="请输入管理员账号">
+                        </div>
+                        <div class="form-group">
+                            <label>密码</label>
+                            <input type="password" name="password" class="form-control" placeholder="请输入管理员密码">
+                        </div>
+                        {{if .success}}
+                            <a href="/admin" class="btn btn-block btn-success">登陆成功，正在跳转。</a>
+                        {{else}}
+                            {{if .message}}
+                                <div class="alert alert-danger alert-dismissible" role="alert">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <p>{{.message}}</p>
+                                </div>
+                            {{end}}
+                            <button type="submit" class="btn btn-block btn-black">登陆</button>
+                        {{end}}
+                        <button type="reset" class="btn btn-block btn-secondary">重置</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Scripts -->
+    <script src="assets/js/bootstrap.min.js"></script>
+    </body>
+
+    </html>
+{{end}}
