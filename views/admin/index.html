@@ -39,6 +39,10 @@
         background-color: #eee;
     }
 
+    .list-class-item-action{
+        background-color: #fcf8e3; !important;
+    }
+
 </style>
 
 <body class="page-body">
@@ -934,19 +938,21 @@
         let nestedSortables = [].slice.call(document.querySelectorAll('.nested-sortable'));
         for (let i = 0; i < nestedSortables.length; i++) {
             new Sortable(nestedSortables[i], {
-                group: 'nested',
+                group: 'nested-'+i,
                 animation: 150,
                 fallbackOnBody: true,
-                // 元素被选中
-                onChoose: function (evt) {
-                    console.log("元素被选中", evt.item);
-
-                },
-
-                // 元素未被选中的时候（从选中到未选中）
-                onUnchoose: function(evt) {
-                    console.log("元素被释放", evt.item);
-                },
+                chosenClass: 'list-class-item-action', //选中样式
+                // // 元素被选中
+                // onChoose: function (evt) {
+                //     // console.log("元素被选中", evt.item);
+                //     $(evt.item).addClass("list-class-item-action");
+                // },
+                //
+                // // 元素未被选中的时候（从选中到未选中）
+                // onUnchoose: function(evt) {
+                //     // console.log("元素被释放", evt.item);
+                //     $(evt.item).removeClass("list-class-item-action");
+                // },
             });
         }
     });
