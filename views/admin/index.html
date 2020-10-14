@@ -43,6 +43,21 @@
         background-color: #fcf8e3; !important;
     }
 
+    a.add {
+        font-size: 13px;
+        color: #40bbea;
+    }
+
+    a.edit {
+        font-size: 13px;
+        color: #8dc63f;
+    }
+
+    a.delete {
+        font-size: 13px;
+        color: #cc3f44;
+    }
+
 </style>
 
 <body class="page-body">
@@ -73,33 +88,33 @@
                 <ul id="main-menu" class="main-menu">
                     <li class="has-sub active" data-page="admin-index" id="menu-admin-index">
                         <a href="#">
-                            <i class="linecons-cog"></i>
+                            <i class="linecons-shop"></i>
                             <span class="title">后台首页</span>
                         </a>
                     </li>
                     <li class="has-sub" data-page="class-config" id="menu-class-config">
                         <a href="#">
-                            <i class="linecons-beaker"></i>
+                            <i class="linecons-star"></i>
                             <span class="title">分类管理</span>
                             <!-- <span class="badge badge-green">15</span> -->
                         </a>
                     </li>
                     <li class="has-sub" data-page="web-config" id="menu-web-config">
                         <a href="#">
-                            <i class="linecons-beaker"></i>
+                            <i class="linecons-desktop"></i>
                             <span class="title">网址管理</span>
                         </a>
                     </li>
                     <li class="has-sub" data-page="stack-config" id="menu-stack-config">
                         <a href="#">
-                            <i class="linecons-desktop"></i>
+                            <i class="linecons-cog"></i>
                             <span class="title">网站设置</span>
                             <!-- <span class="badge badge-green">7</span> -->
                         </a>
                     </li>
                     <li class="has-sub" data-page="user-config" id="menu-user-config">
                         <a href="#">
-                            <i class="linecons-note"></i>
+                            <i class="linecons-user"></i>
                             <span class="title">用户设置</span>
                         </a>
                     </li>
@@ -107,7 +122,7 @@
             </div>
         </div>
         <div class="main-content">
-            <nav class="navbar user-info-navbar" role="navigation">
+            <nav class="navbar user-info-navbar navbar-static-top" role="navigation">
                 <!-- User Info, Notifications and Menu Bar -->
                 <!-- Left links for user info navbar -->
                 <ul class="user-info-menu left-links list-inline list-unstyled">
@@ -172,42 +187,56 @@
                 </div>
             </div>
             <div class="page" id="class-config" style="display: none;">
-                <div class="page-title">
+                <div class="page-title" style="margin-bottom: 12px;">
                     <div class="title-env">
                         <h1 class="title">分类管理</h1>
                         <p class="description">网址分类和首页左侧菜单结构管理。</p>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <button class="btn btn-info btn-lg btn-block">添加</button>
+                    </div>
+                    <div class="col-sm-2 col-sm-offset-8">
+                        <button class="btn btn-success btn-lg btn-block">保存</button>
+                    </div>
+                </div>
                 <ul class="list-group nested-sortable" id="menu-table">
                     {{range $index,$menu := .webstack.Menu}}
                         {{if eq $menu.Menu "smooth"}}
-                            {{if $menu.Sub}}
-                                <li class="list-group-item list-class-title list-class-has-sub">
-                                    <div>
-                                        <i class="{{$menu.Icon}}"></i>
-                                        <span class="title">{{$menu.Name}}</span>
+                            <li class="list-group-item list-class-title list-class-has-sub">
+                                <div class="">
+                                    <i class="{{$menu.Icon}}"></i>
+                                    <span class="title">{{$menu.Name}}</span>
+                                    <div class="pull-right">
+                                        <a href="#" class="add"><i class="linecons-paper-plane"></i>添加</a>&nbsp;
+                                        <a href="#" class="edit"><i class="linecons-pencil"></i>编辑</a>&nbsp;
+                                        <a href="#" class="delete"><i class="linecons-trash"></i>删除</a>
                                     </div>
-                                    <ul class="list-group nested-sortable">
-                                        {{range $indexSub,$menuSub := $menu.Sub}}
-                                            <li class="list-group-item list-class-item">
-                                                <span class="title">{{$menuSub.Name}}</span>
-                                            </li>
-                                        {{end}}
-                                    </ul>
-                                </li>
-                            {{else}}
-                                <li class="list-group-item list-class-title">
-                                    <div>
-                                        <i class="{{$menu.Icon}}"></i>
-                                        <span class="title">{{$menu.Name}}</span>
-                                    </div>
-                                </li>
-                            {{end}}
+                                </div>
+                                {{if $menu.Sub}}
+                                <ul class="list-group nested-sortable">
+                                    {{range $indexSub,$menuSub := $menu.Sub}}
+                                        <li class="list-group-item list-class-item">
+                                            <span class="title">{{$menuSub.Name}}</span>
+                                            <div class="pull-right">
+                                                <a href="#" class="edit"><i class="linecons-pencil"></i>编辑</a>&nbsp;
+                                                <a href="#" class="delete"><i class="linecons-trash"></i>删除</a>
+                                            </div>
+                                        </li>
+                                    {{end}}
+                                </ul>
+                                {{end}}
+                            </li>
                         {{else}}
                             <li class="list-group-item list-class-title">
                                 <div>
                                     <i class="{{$menu.Icon}}"></i>
                                     <span class="title">{{$menu.Name}}</span>
+                                    <div class="pull-right">
+                                        <a href="#" class="edit"><i class="linecons-pencil"></i>编辑</a>&nbsp;
+                                        <a href="#" class="delete"><i class="linecons-trash"></i>删除</a>
+                                    </div>
                                 </div>
                             </li>
                         {{end}}
@@ -235,7 +264,7 @@
                         </button>
                     </div>
                     <div class="col-md-4">
-                        <a href="javascript:;" onclick="jQuery('#modal-6').modal('show', {backdrop: 'static'});" class="edit">
+                        <a href="javascript:;" onclick="jQuery('#modal-web-edit').modal('show', {backdrop: 'static'});" class="edit">
                             <button class="btn btn-block btn-icon btn-secondary btn-warning pull-right btn-lg">
                                 <i class="fa-plus"></i>&nbsp;&nbsp;添加网址
                             </button>
@@ -318,8 +347,8 @@
                                             <span class="email">Admin</span>
                                         </td>
                                         <td class="action-links">
-                                            <a href="javascript:;" onclick="jQuery('#modal-6').modal('show', {backdrop: 'static'});" class="edit"><i class="linecons-pencil"></i>编辑</a>
-                                            <a href="javascript:;" onclick="jQuery('#modal-1').modal('show', {backdrop: 'static'});" class="delete"><i class="linecons-trash"></i>删除</a>
+                                            <a href="javascript:;" onclick="jQuery('#modal-web-edit').modal('show', {backdrop: 'static'});" class="edit"><i class="linecons-pencil"></i>编辑</a>
+                                            <a href="javascript:;" onclick="jQuery('#modal-web-delete').modal('show', {backdrop: 'static'});" class="delete"><i class="linecons-trash"></i>删除</a>
                                         </td>
                                     </tr>
                                     <tr>
@@ -355,8 +384,8 @@
                                             <span class="email">Admin</span>
                                         </td>
                                         <td class="action-links">
-                                            <a href="javascript:;" onclick="jQuery('#modal-6').modal('show', {backdrop: 'static'});" class="edit"><i class="linecons-pencil"></i>编辑</a>
-                                            <a href="javascript:;" onclick="jQuery('#modal-1').modal('show', {backdrop: 'static'});" class="delete"><i class="linecons-trash"></i>删除</a>
+                                            <a href="javascript:;" onclick="jQuery('#modal-web-edit').modal('show', {backdrop: 'static'});" class="edit"><i class="linecons-pencil"></i>编辑</a>
+                                            <a href="javascript:;" onclick="jQuery('#modal-web-delete').modal('show', {backdrop: 'static'});" class="delete"><i class="linecons-trash"></i>删除</a>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -456,8 +485,8 @@
                                             <span class="email">Admin</span>
                                         </td>
                                         <td class="action-links">
-                                            <a href="javascript:;" onclick="jQuery('#modal-6').modal('show', {backdrop: 'static'});" class="edit"><i class="linecons-pencil"></i>编辑</a>
-                                            <a href="javascript:;" onclick="jQuery('#modal-1').modal('show', {backdrop: 'static'});" class="delete"><i class="linecons-trash"></i>删除</a>
+                                            <a href="javascript:;" onclick="jQuery('#modal-web-edit').modal('show', {backdrop: 'static'});" class="edit"><i class="linecons-pencil"></i>编辑</a>
+                                            <a href="javascript:;" onclick="jQuery('#modal-web-delete').modal('show', {backdrop: 'static'});" class="delete"><i class="linecons-trash"></i>删除</a>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -557,8 +586,8 @@
                                             <span class="email">Admin</span>
                                         </td>
                                         <td class="action-links">
-                                            <a href="javascript:;" onclick="jQuery('#modal-6').modal('show', {backdrop: 'static'});" class="edit"><i class="linecons-pencil"></i>编辑</a>
-                                            <a href="javascript:;" onclick="jQuery('#modal-1').modal('show', {backdrop: 'static'});" class="delete"><i class="linecons-trash"></i>删除</a>
+                                            <a href="javascript:;" onclick="jQuery('#modal-web-edit').modal('show', {backdrop: 'static'});" class="edit"><i class="linecons-pencil"></i>编辑</a>
+                                            <a href="javascript:;" onclick="jQuery('#modal-web-delete').modal('show', {backdrop: 'static'});" class="delete"><i class="linecons-trash"></i>删除</a>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -652,8 +681,8 @@
             </footer>
         </div>
     </div>
-    <!-- Modal 1 (Basic)-->
-    <div class="modal fade" id="modal-1">
+    <!-- 删除网站Modal -->
+    <div class="modal fade" id="modal-web-delete">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -670,8 +699,8 @@
             </div>
         </div>
     </div>
-    <!-- Modal 6 (Long Modal)-->
-    <div class="modal fade" id="modal-6">
+    <!-- 编辑网站Modal -->
+    <div class="modal fade" id="modal-web-edit">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -747,9 +776,40 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <div class="form-group no-margin">
-                                            <label for="field-7" class="control-label">简介</label>
-                                            <textarea class="form-control autogrow" id="field-7" placeholder="对此标签页的简介文字"></textarea>
+                                        <div class="form-group">
+                                            <label class="control-label">分类</label>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <select class="form-control" name="select_class" id="select-class-1">
+                                                        {{range $index,$menu := .webstack.Menu}}
+                                                            <option value="{{$index}}">{{$menu.Name}}</option>
+                                                        {{end}}
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <select class="form-control col-md-6" name="select_class" id="select-class-2" style="display: none;">
+                                                        {{range $index,$menu := .webstack.Menu}}
+                                                            {{if $menu.Sub}}
+                                                                {{range $indexSub,$menuSub := $menu.Sub}}
+                                                                    <option class="select-menu-sub select-menu-sub-{{$index}}" value="{{$indexSub}}" style="display: none;">{{$menuSub.Name}}</option>
+                                                                {{end}}
+                                                            {{end}}
+                                                        {{end}}
+                                                    </select>
+                                                </div>
+                                                <script type="text/javascript">
+                                                    jQuery(document).ready(function($)
+                                                    {
+                                                        console.log($("#select-class-1").val());
+                                                        $("#select-class-1").select(function(){
+                                                            console.log($("#select-class-1").val());
+                                                        });
+                                                        $("#select-class-2").select(function(){
+                                                            console.log($("#select-class-2").val());
+                                                        });
+                                                    });
+                                                </script>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -765,142 +825,10 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4">
-                            <label for="field-3" class="control-label">一级分类</label>
-                            </br>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-white">设计师</button>
-                                <button type="button" class="btn btn-white dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                    <i class="caret"></i>
-                                </button>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li>
-                                        <a href="#">设计师</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">产品经理</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">产品策划</a>
-                                    </li>
-                                    <li class="divider"></li>
-                                    <li>
-                                        <a href="#">前端开发</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="field-3" class="control-label">二级分类</label>
-                            </br>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-white">设计工具</button>
-                                <button type="button" class="btn btn-white dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                    <i class="caret"></i>
-                                </button>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li>
-                                        <a href="#">灵感收集</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">设计素材</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">icon下载</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">高清图库</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="field-3" class="control-label">三级分类</label>
-                            </br>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-white">三级分类没想好</button>
-                                <button type="button" class="btn btn-white dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                    <i class="caret"></i>
-                                </button>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li>
-                                        <a href="#">三级分类</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">三级分类</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">三级分类</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="field-4" class="control-label">标签</label>
-                                <input type="text" class="form-control" id="field-4" placeholder="输入新标签">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <button class="btn btn-black btn-xs">Tools</button>
-                                <button class="btn btn-black btn-xs">Design</button>
-                                <button class="btn btn-white btn-xs">Other</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="field-3" class="control-label">添加时间</label>
-                                <input type="text" class="form-control" id="field-3" placeholder="2017-08-01">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="field-3" class="control-label">推荐人</label>
-                                <input type="text" class="form-control" id="field-3" placeholder="Admin">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="field-3" class="control-label">推荐人邮箱</label>
-                                <input type="text" class="form-control" id="field-3" placeholder="Admin">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="field-3" class="control-label">推荐人身份</label>
-                            </br>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-white">网站开发者</button>
-                                <button type="button" class="btn btn-white dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                    <i class="caret"></i>
-                                </button>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li>
-                                        <a href="#">网站管理者</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">网站发现者</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">管理员</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-12">
                             <div class="form-group no-margin">
-                                <label for="field-7" class="control-label">推荐人理由</label>
-                                <textarea class="form-control autogrow" id="field-7" placeholder="对此标签页的简介文字"></textarea>
+                                <label for="field-7" class="control-label">简介</label>
+                                <textarea class="form-control autogrow" id="field-7" placeholder="对此网站的简介文字"></textarea>
                             </div>
                         </div>
                     </div>
@@ -940,6 +868,7 @@
             new Sortable(nestedSortables[i], {
                 group: 'nested-'+i,
                 animation: 150,
+                delay: 300,
                 fallbackOnBody: true,
                 chosenClass: 'list-class-item-action', //选中样式
                 // // 元素被选中
