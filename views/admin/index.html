@@ -769,8 +769,8 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="field-3" class="control-label">名称</label>
-                                            <input type="text" class="form-control" id="field-3" placeholder="网站名称">
+                                            <label for="web-name" class="control-label">名称</label>
+                                            <input type="text" class="form-control" id="web-name" placeholder="网站名称">
                                         </div>
                                     </div>
                                 </div>
@@ -791,7 +791,7 @@
                                                         {{range $index,$menu := .webstack.Menu}}
                                                             {{if $menu.Sub}}
                                                                 {{range $indexSub,$menuSub := $menu.Sub}}
-                                                                    <option class="select-menu-sub select-menu-sub-{{$index}}" value="{{$indexSub}}" style="display: none;">{{$menuSub.Name}}</option>
+                                                                    <option class="select-menu-sub select-menu-sub-{{$index}}" value="{{$index}}-{{$indexSub}}" style="display: none;">{{$menuSub.Name}}</option>
                                                                 {{end}}
                                                             {{end}}
                                                         {{end}}
@@ -800,11 +800,20 @@
                                                 <script type="text/javascript">
                                                     jQuery(document).ready(function($)
                                                     {
-                                                        console.log($("#select-class-1").val());
-                                                        $("#select-class-1").select(function(){
-                                                            console.log($("#select-class-1").val());
+                                                        $("#select-class-1").change(function(){
+                                                            const id = $(this).children('option:selected').val();
+                                                            $(".select-menu-sub").hide();
+                                                            if ($(".select-menu-sub").hasClass("select-menu-sub-" + id)){
+                                                                $("#select-class-2").show();
+                                                                $("#select-class-2").val(id + "-0");
+                                                                $(".select-menu-sub-" + id).show();
+                                                            } else {
+                                                                $("#select-class-2").hide();
+                                                                $("#select-class-2").empty();
+                                                            }
+                                                            console.log($("#select-class-2").val());
                                                         });
-                                                        $("#select-class-2").select(function(){
+                                                        $("#select-class-2").change(function(){
                                                             console.log($("#select-class-2").val());
                                                         });
                                                     });
@@ -819,16 +828,16 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="field-3" class="control-label">网址</label>
-                                <input type="text" class="form-control" id="field-3" placeholder="Https://">
+                                <label for="web-url" class="control-label">网址</label>
+                                <input type="text" class="form-control" id="web-url" placeholder="https://">
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group no-margin">
-                                <label for="field-7" class="control-label">简介</label>
-                                <textarea class="form-control autogrow" id="field-7" placeholder="对此网站的简介文字"></textarea>
+                                <label for="web-mark" class="control-label">简介</label>
+                                <textarea class="form-control autogrow" id="web-mark" placeholder="对此网站的简介文字"></textarea>
                             </div>
                         </div>
                     </div>
