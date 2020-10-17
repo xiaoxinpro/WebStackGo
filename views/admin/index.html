@@ -182,7 +182,7 @@
                     <div class="panel-body">
                         <p class="text-left">Github：<a href="https://github.com/xiaoxinpro" target="_blank">https://github.com/xiaoxinpro</a></p>
                         <p class="text-left">Email：pro@xxgzs.org</p>
-                        <p class="text-left">如果你有更好的想法，可以通过右击与我联系，欢迎与我交流分享。</p>
+                        <p class="text-left">如果你有更好的想法，可以通过邮件与我联系，欢迎与我交流分享。</p>
                     </div>
                 </div>
             </div>
@@ -251,19 +251,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
-                        <form method="get" action="" enctype="application/x-www-form-urlencoded">
-                            <input type="text" class="form-control input-lg" placeholder="Search..." name="s" />
-                            <button type="submit" class="btn-unstyled">
-                            </button>
-                        </form>
-                    </div>
-                    <div class="col-md-2">
-                        <button class="btn btn-block btn-black btn-lg">
-                            <span>Search</span>
-                        </button>
-                    </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3 col-md-offset-9">
                         <a href="javascript:;" onclick="jQuery('#modal-web-edit').modal('show', {backdrop: 'static'});" class="edit">
                             <button class="btn btn-block btn-icon btn-secondary btn-warning pull-right btn-lg">
                                 <i class="fa-plus"></i>&nbsp;&nbsp;添加网址
@@ -865,12 +853,17 @@
     <script src="assets/js/sortable.min.js"></script>
 
     <script type="text/javascript">
+    var WebStack;
     $(document).ready(function() {
         $(document).on('click', '.has-sub', function(){
             let that = $(this)
             let page = that.attr('data-page');
             menu(page);
-        })
+        });
+
+        $.getJSON("?cmd=webstack.json","",function (result) {
+            WebStack = result;
+        });
 
         let nestedSortables = [].slice.call(document.querySelectorAll('.nested-sortable'));
         for (let i = 0; i < nestedSortables.length; i++) {
