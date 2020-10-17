@@ -132,6 +132,12 @@ func GetAdmin(c *gin.Context)  {
 			"message": "退出登陆成功",
 			"err": 0,
 		})
+	case "webstack.json":
+		c.JSON(http.StatusOK, WebStack)
+	case "menu.json":
+		c.JSON(http.StatusOK,WebStack.Menu)
+	case "class.json":
+		c.JSON(http.StatusOK, WebStack.Class)
 	default:
 		c.HTML(http.StatusOK, "admin/index.html", gin.H{
 			"login": Login,
