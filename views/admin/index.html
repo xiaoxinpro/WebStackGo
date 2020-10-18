@@ -262,369 +262,43 @@
                 <div class="row">
                     <div class="col-md-12">
                         <ul class="nav nav-tabs">
-                            <li class="active">
-                                <a href="#all" data-toggle="tab">常用推荐</a>
+                        {{range $index,$menu := .webstack.Menu}}
+                            {{if eq $menu.Menu "smooth"}}
+                            <li {{if eq $index 0}}class="active"{{end}}>
+                                <a href="#webstack-class-{{$index}}" data-toggle="tab">{{$menu.Name}}</a>
                             </li>
-                            <li>
-                                <a href="#designer" data-toggle="tab">社区资讯</a>
-                            </li>
-                            <li>
-                                <a href="#PM" data-toggle="tab">灵感采集</a>
-                            </li>
-                            <li>
-                                <a href="#subscribers" data-toggle="tab">素材资源</a>
-                            </li>
-                            <li>
-                                <a href="#subscribers" data-toggle="tab">常用工具</a>
-                            </li>
-                            <li>
-                                <a href="#subscribers" data-toggle="tab">学习教程</a>
-                            </li>
-                            <li>
-                                <a href="#subscribers" data-toggle="tab">UED团队</a>
-                            </li>
+                            {{end}}
+                        {{end}}
                         </ul>
                         <div class="tab-content">
-                            <div class="tab-pane active" id="all">
-                                <table class="table table-hover members-table middle-align">
-                                    <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th class="hidden-xs hidden-sm"></th>
-                                        <th>名称简介</th>
-                                        <th class="hidden-xs hidden-sm">链接</th>
-                                        <th>分类</th>
-                                        <th>标签</th>
-                                        <th>ID</th>
-                                        <th>添加时间</th>
-                                        <th>推荐者</th>
-                                        <th>操作</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td class="user-cb">
-                                            <input type="checkbox" class="cbr" name="members-list[]" value="1" checked />
-                                        </td>
-                                        <td class="user-image hidden-xs hidden-sm">
-                                            <a href="#">
-                                                <img src="assets/images/user-1.png" class="img-circle" alt="user-pic" />
-                                            </a>
-                                        </td>
-                                        <td class="user-name">
-                                            <a href="#" class="name">Adobe Photoshop</a>
-                                            <span>Adobe公司开发的图像合成软件...</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">www.photoshop.com</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">设计师/设计工具</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <div class="label label-primary">tools</div>
-                                            <div class="label label-primary">design</div>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">012</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">2017-08-01</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">Admin</span>
-                                        </td>
-                                        <td class="action-links">
-                                            <a href="javascript:;" onclick="jQuery('#modal-web-edit').modal('show', {backdrop: 'static'});" class="edit"><i class="linecons-pencil"></i>编辑</a>
-                                            <a href="javascript:;" onclick="jQuery('#modal-web-delete').modal('show', {backdrop: 'static'});" class="delete"><i class="linecons-trash"></i>删除</a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="user-cb">
-                                            <input type="checkbox" class="cbr" name="members-list[]" value="1" checked />
-                                        </td>
-                                        <td class="user-image hidden-xs hidden-sm">
-                                            <a href="#">
-                                                <img src="assets/images/user-1.png" class="img-circle" alt="user-pic" />
-                                            </a>
-                                        </td>
-                                        <td class="user-name">
-                                            <a href="#" class="name">Adobe XD</a>
-                                            <span>Adobe公司开发的网页设计软件...</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">www.photoshop.com</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">设计师/设计工具</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <div class="label label-primary">tools</div>
-                                            <div class="label label-primary">design</div>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">012</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">2017-08-01</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">Admin</span>
-                                        </td>
-                                        <td class="action-links">
-                                            <a href="javascript:;" onclick="jQuery('#modal-web-edit').modal('show', {backdrop: 'static'});" class="edit"><i class="linecons-pencil"></i>编辑</a>
-                                            <a href="javascript:;" onclick="jQuery('#modal-web-delete').modal('show', {backdrop: 'static'});" class="delete"><i class="linecons-trash"></i>删除</a>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="members-table-actions">
-                                            <div class="selected-items">
-                                                已选中<span>2</span> 个项目
-                                            </div>
-                                            <div class="selected-actions">
-                                                <a href="#" class="delete">删除</a>
-                                            </div>
+                        {{range $index,$menu := .webstack.Menu}}
+                            {{if eq $menu.Menu "smooth"}}
+                                <div class="tab-pane {{if eq $index 0}}active{{end}}" id="webstack-class-{{$index}}">
+                                    <table class="table table-hover members-table middle-align">
+                                        <thead>
+                                        <tr>
+                                            <th class="user-cb"><input type="checkbox" class="cbr" /></th>
+                                            <th></th>
+                                            <th>名称简介</th>
+                                            <th class="hidden-xs hidden-sm">链接</th>
+                                            <th class="hidden-xs hidden-sm">分类</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                    <div class="members-table-actions">
+                                        <div class="selected-items">
+                                            已选中 <span id="webstack-class-selected-{{$index}}">0</span> 个项目
+                                        </div>
+                                        <div class="selected-actions">
+                                            <a href="#" class="delete">删除</a>
                                         </div>
                                     </div>
-                                    <div class="col-sm-6 text-right text-center-sm">
-                                        <ul class="pagination pagination-sm no-margin">
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa-angle-left"></i>
-                                                </a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">1</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">2</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">3</a>
-                                            </li>
-                                            <li class="disabled">
-                                                <a href="#">4</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">5</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">6</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa-angle-right"></i>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
                                 </div>
-                            </div>
-                            <div class="tab-pane" id="designer">
-                                <table class="table table-hover members-table middle-align">
-                                    <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th class="hidden-xs hidden-sm"></th>
-                                        <th>名称简介</th>
-                                        <th class="hidden-xs hidden-sm">链接</th>
-                                        <th>分类</th>
-                                        <th>标签</th>
-                                        <th>ID</th>
-                                        <th>添加时间</th>
-                                        <th>推荐者</th>
-                                        <th>操作</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td class="user-cb">
-                                            <input type="checkbox" class="cbr" name="members-list[]" value="1" checked />
-                                        </td>
-                                        <td class="user-image hidden-xs hidden-sm">
-                                            <a href="#">
-                                                <img src="assets/images/user-1.png" class="img-circle" alt="user-pic" />
-                                            </a>
-                                        </td>
-                                        <td class="user-name">
-                                            <a href="#" class="name">Adobe XD</a>
-                                            <span>Adobe公司开发的网页设计软件...</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">www.photoshop.com</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">设计师/设计工具</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <div class="label label-primary">tools</div>
-                                            <div class="label label-primary">design</div>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">012</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">2017-08-01</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">Admin</span>
-                                        </td>
-                                        <td class="action-links">
-                                            <a href="javascript:;" onclick="jQuery('#modal-web-edit').modal('show', {backdrop: 'static'});" class="edit"><i class="linecons-pencil"></i>编辑</a>
-                                            <a href="javascript:;" onclick="jQuery('#modal-web-delete').modal('show', {backdrop: 'static'});" class="delete"><i class="linecons-trash"></i>删除</a>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="members-table-actions">
-                                            <div class="selected-items">
-                                                已选中<span>2</span> 个项目
-                                            </div>
-                                            <div class="selected-actions">
-                                                <a href="#" class="delete">删除</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6 text-right text-center-sm">
-                                        <ul class="pagination pagination-sm no-margin">
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa-angle-left"></i>
-                                                </a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">1</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">2</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">3</a>
-                                            </li>
-                                            <li class="disabled">
-                                                <a href="#">4</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">5</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">6</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa-angle-right"></i>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="PM">
-                                <table class="table table-hover members-table middle-align">
-                                    <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th class="hidden-xs hidden-sm"></th>
-                                        <th>名称简介</th>
-                                        <th class="hidden-xs hidden-sm">链接</th>
-                                        <th>分类</th>
-                                        <th>标签</th>
-                                        <th>ID</th>
-                                        <th>添加时间</th>
-                                        <th>推荐者</th>
-                                        <th>操作</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td class="user-cb">
-                                            <input type="checkbox" class="cbr" name="members-list[]" value="1" checked />
-                                        </td>
-                                        <td class="user-image hidden-xs hidden-sm">
-                                            <a href="#">
-                                                <img src="assets/images/user-1.png" class="img-circle" alt="user-pic" />
-                                            </a>
-                                        </td>
-                                        <td class="user-name">
-                                            <a href="#" class="name">Adobe Photoshop</a>
-                                            <span>Adobe公司开发的图像合成软件...</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">www.photoshop.com</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">设计师/设计工具</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <div class="label label-primary">tools</div>
-                                            <div class="label label-primary">design</div>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">012</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">2017-08-01</span>
-                                        </td>
-                                        <td class="hidden-xs hidden-sm">
-                                            <span class="email">Admin</span>
-                                        </td>
-                                        <td class="action-links">
-                                            <a href="javascript:;" onclick="jQuery('#modal-web-edit').modal('show', {backdrop: 'static'});" class="edit"><i class="linecons-pencil"></i>编辑</a>
-                                            <a href="javascript:;" onclick="jQuery('#modal-web-delete').modal('show', {backdrop: 'static'});" class="delete"><i class="linecons-trash"></i>删除</a>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="members-table-actions">
-                                            <div class="selected-items">
-                                                已选中<span>2</span> 个项目
-                                            </div>
-                                            <div class="selected-actions">
-                                                <a href="#" class="delete">删除</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6 text-right text-center-sm">
-                                        <ul class="pagination pagination-sm no-margin">
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa-angle-left"></i>
-                                                </a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">1</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">2</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">3</a>
-                                            </li>
-                                            <li class="disabled">
-                                                <a href="#">4</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">5</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">6</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa-angle-right"></i>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
+                            {{end}}
+                        {{end}}
                         </div>
                     </div>
                 </div>
@@ -863,6 +537,30 @@
 
         $.getJSON("?cmd=webstack.json","",function (result) {
             WebStack = result;
+            for (let i=0; i<WebStack.Menu.length; i++) {
+                let table = $("#webstack-class-" + i)
+                const MenuName = WebStack.Menu[i].name;
+                const MenuSub = WebStack.Menu[i].sub;
+                if (table) {
+                    let tbody = table.find("tbody")
+                    tbody.empty();
+                    if ( MenuSub.length > 0 ) {
+                        for (let k=0; k<MenuSub.length; k++) {
+                            const MenuSubName = MenuSub[k].name;
+                            const rows = findWebClass(MenuSubName);
+                            for (let j=0; j<rows.length; j++) {
+                                addWebTableItem(tbody,rows[j],MenuSubName,i+'-'+k+'-'+j);
+                            }
+                        }
+                    } else {
+                        const rows = findWebClass(MenuName);
+                        for (let j=0; j<rows.length; j++) {
+                            addWebTableItem(tbody,rows[j],MenuName,i+'-'+j);
+                        }
+                    }
+                }
+
+            }
         });
 
         let nestedSortables = [].slice.call(document.querySelectorAll('.nested-sortable'));
@@ -893,6 +591,29 @@
         $(".has-sub").removeClass("active");
         $("#"+page).show();
         $("#menu-"+page).addClass("active");
+    }
+
+    function findWebClass(MenuName) {
+        for (let i=0; i<WebStack['Class'].length; i++) {
+            if (WebStack['Class'][i].name == MenuName) {
+                return WebStack['Class'][i].rows;
+            }
+        }
+        return Array();
+    }
+
+    function addWebTableItem(tbody, webItem, menuName, index) {
+        tbody.append('<tr> ' +
+            '<td class="user-cb"><input type="checkbox" class="cbr" name="members-list[]" value="'+index+'" /></td>' +
+            '<td class="user-image"><a href="#"><img src="'+ webItem.img +'" class="img-circle" alt="user-pic" /></a></td>' +
+            '<td class="user-name"><span class="name">' + webItem.name +'</span><span>' + webItem.mark +'</span></td>' +
+            '<td class="hidden-xs hidden-sm"><span class="email">' + webItem.url +'</span></td>' +
+            '<td class="hidden-xs hidden-sm" style=" white-space:nowrap"><span class="email">'+menuName+'</span></td>' +
+            '<td class="action-links" style="width: auto;">' +
+            '<a href="javascript:;" onclick="jQuery(\'#modal-web-edit\').modal(\'show\', {backdrop: \'static\'});" class="edit"><i class="linecons-pencil"></i>编辑</a>' +
+            '<a href="javascript:;" onclick="jQuery(\'#modal-web-delete\').modal(\'show\', {backdrop: \'static\'});" class="delete"><i class="linecons-trash"></i>删除</a>' +
+            '</td>' +
+            '</tr>');
     }
 
     function logout() {
