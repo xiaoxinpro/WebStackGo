@@ -357,11 +357,12 @@
                     <h4 class="modal-title">删除网站</h4>
                 </div>
                 <div class="modal-body">
-                    确定要删除这个网址吗!
+                    <div class="" id="delete-message" style="width: 100%"></div>
                 </div>
                 <div class="modal-footer">
+                    <div class="pull-left text-danger">注意：删除后将无法恢复，建议备份后删除！</div>
                     <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-info">确定</button>
+                    <button type="button" class="btn btn-danger">删除</button>
                 </div>
             </div>
         </div>
@@ -569,6 +570,17 @@
             let button = $(event.relatedTarget) // Button that triggered the modal
             let index = button.data('index') // Extract info from data-* attributes
             let modal = $(this)
+            if (index) {
+                let arrData = index.split("-");
+                let menuClass = WebStack['Menu'][arrData[0]];
+                let menuName = menuClass['name'];
+                if (arrData.length >= 3) {
+                    menuName = menuClass['sub'][arrData[1]]['name'];
+                }
+                let webData = findWebClass(menuName)[arrData[arrData.length-1]];
+                modal.find('.modal-title').text("删除网址【"+webData['name']+"】")
+                modal.find('.modal-body #delete-message').text("请谨慎决定是否要删除 【"+webData['name']+"】 "+webData['url']+" 网址吗？")
+            }
         });
 
         $('#modal-web-edit').on('show.bs.modal', function (event) {
@@ -581,7 +593,7 @@
                 let arrData = index.split("-");
                 modal.find('.modal-title').text("编辑网站");
                 if (arrData.length >= 2) {
-                    var menuClass = WebStack['Menu'][arrData[0]];
+                    let menuClass = WebStack['Menu'][arrData[0]];
                     menuName = menuClass['name'];
                     webIndex = arrData[1];
                     modal.find('.modal-body #select-class-1').val(arrData[0]);;
