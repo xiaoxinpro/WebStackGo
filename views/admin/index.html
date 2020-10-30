@@ -103,27 +103,27 @@
                         </a>
                     </li>
                     <li class="has-sub" data-page="class-config" id="menu-class-config">
-                        <a href="#">
+                        <a href="#class-config">
                             <i class="linecons-star"></i>
                             <span class="title">分类管理</span>
                             <!-- <span class="badge badge-green">15</span> -->
                         </a>
                     </li>
                     <li class="has-sub" data-page="web-config" id="menu-web-config">
-                        <a href="#">
+                        <a href="#web-config">
                             <i class="linecons-desktop"></i>
                             <span class="title">网址管理</span>
                         </a>
                     </li>
                     <li class="has-sub" data-page="stack-config" id="menu-stack-config">
-                        <a href="#">
+                        <a href="#stack-config">
                             <i class="linecons-cog"></i>
                             <span class="title">网站设置</span>
                             <!-- <span class="badge badge-green">7</span> -->
                         </a>
                     </li>
                     <li class="has-sub" data-page="user-config" id="menu-user-config">
-                        <a href="#">
+                        <a href="#user-config">
                             <i class="linecons-user"></i>
                             <span class="title">用户设置</span>
                         </a>
@@ -290,13 +290,14 @@
                                             <th>名称简介</th>
                                             <th class="hidden-xs hidden-sm">链接</th>
                                             <th class="hidden-xs hidden-sm">分类</th>
-                                            <th class="text-center">操作</th>
+                                            <th class="text-center" style="width: 100px;">操作</th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         </tbody>
                                     </table>
                                     <div class="members-table-actions">
+                                        <a href="#" class="add">全选</a>
                                         <div class="selected-items">
                                             已选中 <span id="webstack-class-selected-{{$index}}">0</span> 个项目
                                         </div>
@@ -535,11 +536,12 @@
     <script type="text/javascript">
     var WebStack;
     $(document).ready(function() {
-        $(document).on('click', '.has-sub', function(){
-            let that = $(this)
-            let page = that.attr('data-page');
-            menu(page);
-        });
+
+        let m=window.location.hash.replace("#", "");
+        if (m && $(".page[id="+m+"]").length > 0) {
+            menu(m);
+        }
+        // console.log(m, $(".page[id="+m+"]").length);
 
         $.getJSON("?cmd=webstack.json","",function (result) {
             WebStack = result;
@@ -566,6 +568,29 @@
                     }
                 }
 
+            }
+        });
+
+        function menu(page) {
+            $(".page").hide();
+            $(".has-sub").removeClass("active");
+            $("#"+page).show();
+            $("#menu-"+page).addClass("active");
+        }
+
+        $(document).on('click', '.has-sub', function(){
+            let that = $(this)
+            let page = that.attr('data-page');
+            menu(page);
+        });
+
+        $(".cbr").click(function() {
+            if ($(this).is(":checked")== true) {
+                //选中触发事件
+                console.log($(this))
+            } else {
+                //取消选中触发事件
+                console.log($(this))
             }
         });
 
@@ -596,7 +621,7 @@
                 let arrData = index.split("-");
                 modal.find('.modal-title').text("编辑网站");
                 if (arrData.length >= 2) {
-                    let menuClass = WebStack['Menu'][arrData[0]];
+                    var menuClass = WebStack['Menu'][arrData[0]];
                     menuName = menuClass['name'];
                     webIndex = arrData[1];
                     modal.find('.modal-body #select-class-1').val(arrData[0]);;
@@ -649,13 +674,6 @@
         }
     });
 
-    function menu(page) {
-        $(".page").hide();
-        $(".has-sub").removeClass("active");
-        $("#"+page).show();
-        $("#menu-"+page).addClass("active");
-    }
-
     function findWebClass(MenuName) {
         for (let i=0; i<WebStack['Class'].length; i++) {
             if (WebStack['Class'][i].name == MenuName) {
@@ -665,14 +683,26 @@
         return Array();
     }
 
+    function checkWebClick(index) {
+        let arrData = index.split("-");
+        if (arrData.length > 0) {
+            let arrCheck = Array();
+            $(".cbr[value^='"+arrData[0]+"-']:checked").each(function (item) {//
+                arrCheck.push($(this).val());
+            });
+            // console.log(index, arrCheck, arrCheck.length);
+            $("#webstack-class-selected-"+arrData[0]).text(arrCheck.length);
+        }
+    }
+
     function addWebTableItem(tbody, webItem, menuName, index) {
         tbody.append('<tr> ' +
-            '<td class="user-cb"><input type="checkbox" class="cbr" name="members-list[]" value="'+index+'" /></td>' +
+            '<td class="user-cb"><input type="checkbox" class="cbr" name="members-list[]" value="'+index+'" onclick="checkWebClick(\''+index+'\');" /></td>' +
             '<td class="user-image"><a href="#"><img src="'+ webItem.img +'" class="img-circle" alt="user-pic" /></a></td>' +
-            '<td class="user-name"><span class="name">' + webItem.name +'</span><span>' + webItem.mark +'</span></td>' +
+            '<td class="user-name"><span class="name">' + webItem.name +'</span><span class="hidden-xs">' + webItem.mark +'</span></td>' +
             '<td class="hidden-xs hidden-sm"><span class="email">' + webItem.url +'</span></td>' +
             '<td class="hidden-xs hidden-sm" style=" white-space:nowrap"><span class="email">'+menuName+'</span></td>' +
-            '<td class="action-links" style="width: auto;">' +
+            '<td class="action-links text-center" style="width: auto;">' +
             '<button id="btn-web-edit" class="btn btn-success btn-xs" data-toggle="modal" data-target="#modal-web-edit" data-index="'+index+'"><i class="linecons-pencil"></i>编辑</button>' +
             '<button id="btn-web-delete" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#modal-web-delete" data-index="'+index+'"><i class="linecons-trash"></i>删除</button>' +
             '</td>' +
