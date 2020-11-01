@@ -205,7 +205,7 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-2">
-                        <button class="btn btn-info btn-lg btn-block" data-toggle="modal" data-target="#modal-class-edit" >添加</button>
+                        <button class="btn btn-info btn-lg btn-block" data-toggle="modal" data-target="#modal-class-edit" data-index="-">添加</button>
                     </div>
                     <div class="col-sm-2 col-sm-offset-8">
                         <button class="btn btn-success btn-lg btn-block">保存</button>
@@ -219,9 +219,9 @@
                                     <i class="{{$menu.Icon}}"></i>
                                     <span class="title">{{$menu.Name}}</span>
                                     <div class="pull-right">
-                                        <a href="#" class="add" data-toggle="modal" data-target="#modal-class-edit" ><i class="linecons-paper-plane"></i>添加</a>&nbsp;
-                                        <a href="#" class="edit" data-toggle="modal" data-target="#modal-class-edit" ><i class="linecons-pencil"></i>编辑</a>&nbsp;
-                                        <a href="#" class="delete" data-toggle="modal" data-target="#modal-class-delete" ><i class="linecons-trash"></i>删除</a>
+                                        <a href="#" class="add" data-toggle="modal" data-target="#modal-class-edit" data-index="{{$index}}"><i class="linecons-paper-plane"></i>添加</a>&nbsp;
+                                        <a href="#" class="edit" data-toggle="modal" data-target="#modal-class-edit" data-index="{{$index}}"><i class="linecons-pencil"></i>编辑</a>&nbsp;
+                                        <a href="#" class="delete" data-toggle="modal" data-target="#modal-class-delete" data-index="{{$index}}"><i class="linecons-trash"></i>删除</a>
                                     </div>
                                 </div>
                                 {{if $menu.Sub}}
@@ -230,8 +230,8 @@
                                         <li class="list-group-item list-class-item">
                                             <span class="title">{{$menuSub.Name}}</span>
                                             <div class="pull-right">
-                                                <a href="#" class="edit" data-toggle="modal" data-target="#modal-class-edit" ><i class="linecons-pencil"></i>编辑</a>&nbsp;
-                                                <a href="#" class="delete" data-toggle="modal" data-target="#modal-class-delete" ><i class="linecons-trash"></i>删除</a>
+                                                <a href="#" class="edit" data-toggle="modal" data-target="#modal-class-edit" data-index="{{$index}}-{{$indexSub}}"><i class="linecons-pencil"></i>编辑</a>&nbsp;
+                                                <a href="#" class="delete" data-toggle="modal" data-target="#modal-class-delete" data-index="{{$index}}-{{$indexSub}}"><i class="linecons-trash"></i>删除</a>
                                             </div>
                                         </li>
                                     {{end}}
@@ -243,10 +243,10 @@
                                 <div>
                                     <i class="{{$menu.Icon}}"></i>
                                     <span class="title">{{$menu.Name}}</span>
-                                    <div class="pull-right">
+                                    <!-- <div class="pull-right">
                                         <a href="#" class="edit"><i class="linecons-pencil"></i>编辑</a>&nbsp;
                                         <a href="#" class="delete"><i class="linecons-trash"></i>删除</a>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </li>
                         {{end}}
@@ -689,6 +689,33 @@
                 //取消选中触发事件
                 console.log($(this))
             }
+        });
+
+        $('#modal-class-delete').on('show.bs.modal', function (event){
+            let button = $(event.relatedTarget) // Button that triggered the modal
+            let index = button.data('index') // Extract info from data-* attributes
+            let modal = $(this)
+            if (index) {
+                let classIndex = 0;
+                let classUpIndex = false;
+                let menuClass = {};
+                console.log(index);
+                if ((index + "").indexOf("-") > 0) {
+                    let arrData = index.split("-");
+                    classUpIndex = parseInt(arrData[0]);
+                    classIndex = parseInt(arrData[1]);
+                    menuClass = WebStack['Menu'][classUpIndex]['sub'][classIndex];
+                } else {
+                    classIndex = parseInt(index);
+                    menuClass = WebStack['Menu'][classIndex];
+                }
+                modal.find('.modal-title').text("删除分类【"+menuClass['name']+"】");
+                modal.find('.modal-body #delete-message').text("请谨慎决定是否要删除 【"+menuClass['name']+"】 分类及其该分类下的全部网站吗？");
+            }
+        });
+
+        $('#modal-class-edit').on('show.bs.modal', function (event){
+
         });
 
         $('#modal-web-delete').on('show.bs.modal', function (event) {
