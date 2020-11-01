@@ -205,7 +205,7 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-2">
-                        <button class="btn btn-info btn-lg btn-block">添加</button>
+                        <button class="btn btn-info btn-lg btn-block" data-toggle="modal" data-target="#modal-class-edit" >添加</button>
                     </div>
                     <div class="col-sm-2 col-sm-offset-8">
                         <button class="btn btn-success btn-lg btn-block">保存</button>
@@ -219,9 +219,9 @@
                                     <i class="{{$menu.Icon}}"></i>
                                     <span class="title">{{$menu.Name}}</span>
                                     <div class="pull-right">
-                                        <a href="#" class="add"><i class="linecons-paper-plane"></i>添加</a>&nbsp;
-                                        <a href="#" class="edit"><i class="linecons-pencil"></i>编辑</a>&nbsp;
-                                        <a href="#" class="delete"><i class="linecons-trash"></i>删除</a>
+                                        <a href="#" class="add" data-toggle="modal" data-target="#modal-class-edit" ><i class="linecons-paper-plane"></i>添加</a>&nbsp;
+                                        <a href="#" class="edit" data-toggle="modal" data-target="#modal-class-edit" ><i class="linecons-pencil"></i>编辑</a>&nbsp;
+                                        <a href="#" class="delete" data-toggle="modal" data-target="#modal-class-delete" ><i class="linecons-trash"></i>删除</a>
                                     </div>
                                 </div>
                                 {{if $menu.Sub}}
@@ -230,8 +230,8 @@
                                         <li class="list-group-item list-class-item">
                                             <span class="title">{{$menuSub.Name}}</span>
                                             <div class="pull-right">
-                                                <a href="#" class="edit"><i class="linecons-pencil"></i>编辑</a>&nbsp;
-                                                <a href="#" class="delete"><i class="linecons-trash"></i>删除</a>
+                                                <a href="#" class="edit" data-toggle="modal" data-target="#modal-class-edit" ><i class="linecons-pencil"></i>编辑</a>&nbsp;
+                                                <a href="#" class="delete" data-toggle="modal" data-target="#modal-class-delete" ><i class="linecons-trash"></i>删除</a>
                                             </div>
                                         </li>
                                     {{end}}
@@ -350,6 +350,103 @@
                     </div>
                 </div>
             </footer>
+        </div>
+    </div>
+    <!-- 删除分类Modal -->
+    <div class="modal fade" id="modal-class-delete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">删除分类</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="" id="delete-message" style="width: 100%"></div>
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-left text-danger">注意：删除后将无法恢复，建议备份后删除！</div>
+                    <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger">删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 编辑分类Modal -->
+    <div class="modal fade" id="modal-class-edit">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">编辑分类</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group" style="margin-bottom: 0px;">
+                                <div class="row">
+                                    <div class="col-md-6" style="margin-bottom: 15px;">
+                                        <label for="web-name" class="control-label">分类名称</label>
+                                        <input type="text" class="form-control" id="class-name" placeholder="网站名称">
+                                    </div>
+                                    <div class="col-md-6" style="margin-bottom: 15px;">
+                                        <label class="control-label">分类图标</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class=""></i></div>
+                                            <select class="form-control" name="select_class" id="select-class-icon">
+                                                <option value="">无图标</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <script type="text/javascript">
+                                        $(document).ready(function() {
+                                            $("#select-class-icon").change(function(){
+                                                const icon = $(this).children('option:selected').val();
+                                                $("#select-class-icon").prev().find("i").attr("class", icon);
+                                            });
+
+                                            setTimeout(function () {
+                                                $.getJSON("assets/json/icon.json","",function (result) {
+                                                    if (result) {
+                                                        let iconSelect = $("#select-class-icon");
+                                                        iconSelect.find('option').remove();
+                                                        iconSelect.append('<option value="">无图标</option>');
+                                                        for (const icon in result) {
+                                                            iconSelect.append('<option value="'+icon+'"><i class="'+icon+'"></i>'+result[icon]+'</option>');
+                                                        }
+                                                    }
+                                                });
+                                            }, 300);
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label class="control-label">上层分类</label>
+                                        <select class="form-control" name="select_class" id="select-up-class">
+                                            <option value="">顶层分类</option>
+                                            {{range $index,$menu := .webstack.Menu}}
+                                                {{if eq $menu.Menu "smooth"}}
+                                                    <option value="{{$index}}">{{$menu.Name}}</option>
+                                                {{end}}
+                                            {{end}}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-info">保存</button>
+                </div>
+            </div>
         </div>
     </div>
     <!-- 删除网站Modal -->
