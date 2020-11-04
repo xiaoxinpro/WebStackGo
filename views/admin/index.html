@@ -219,8 +219,8 @@
                                     <i class="{{$menu.Icon}}"></i>
                                     <span class="title">{{$menu.Name}}</span>
                                     <div class="pull-right">
-                                        <a href="#" class="add" data-toggle="modal" data-target="#modal-class-edit" data-index="{{$index}}"><i class="linecons-paper-plane"></i>添加</a>&nbsp;
-                                        <a href="#" class="edit" data-toggle="modal" data-target="#modal-class-edit" data-index="{{$index}}"><i class="linecons-pencil"></i>编辑</a>&nbsp;
+                                        <a href="#" class="add" data-toggle="modal" data-target="#modal-class-edit" data-class="add" data-index="{{$index}}"><i class="linecons-paper-plane"></i>添加</a>&nbsp;
+                                        <a href="#" class="edit" data-toggle="modal" data-target="#modal-class-edit" data-class="edit" data-index="{{$index}}"><i class="linecons-pencil"></i>编辑</a>&nbsp;
                                         <a href="#" class="delete" data-toggle="modal" data-target="#modal-class-delete" data-index="{{$index}}"><i class="linecons-trash"></i>删除</a>
                                     </div>
                                 </div>
@@ -230,7 +230,7 @@
                                         <li class="list-group-item list-class-item">
                                             <span class="title">{{$menuSub.Name}}</span>
                                             <div class="pull-right">
-                                                <a href="#" class="edit" data-toggle="modal" data-target="#modal-class-edit" data-index="{{$index}}-{{$indexSub}}"><i class="linecons-pencil"></i>编辑</a>&nbsp;
+                                                <a href="#" class="edit" data-toggle="modal" data-target="#modal-class-edit" data-class="edit" data-index="{{$index}}-{{$indexSub}}"><i class="linecons-pencil"></i>编辑</a>&nbsp;
                                                 <a href="#" class="delete" data-toggle="modal" data-target="#modal-class-delete" data-index="{{$index}}-{{$indexSub}}"><i class="linecons-trash"></i>删除</a>
                                             </div>
                                         </li>
@@ -699,7 +699,7 @@
                 let classIndex = 0;
                 let classUpIndex = false;
                 let menuClass = {};
-                console.log(index);
+                // console.log(index);
                 if ((index + "").indexOf("-") > 0) {
                     let arrData = index.split("-");
                     classUpIndex = parseInt(arrData[0]);
@@ -715,7 +715,34 @@
         });
 
         $('#modal-class-edit').on('show.bs.modal', function (event){
-
+            let button = $(event.relatedTarget);
+            let index = button.data('index');
+            let type  = button.data('class');
+            let modal = $(this)
+            if (type == 'add') {
+                modal.find("#class-name").val("");
+                modal.find("#select-class-icon").val("");
+                modal.find("#select-up-class").val("");
+            }
+            if (type == 'edit') {
+                let classIndex = 0;
+                let classUpIndex = false;
+                let menuClass = {};
+                if ((index + "").indexOf("-") > 0) {
+                    let arrData = index.split("-");
+                    classUpIndex = parseInt(arrData[0]);
+                    classIndex = parseInt(arrData[1]);
+                    menuClass = WebStack['Menu'][classUpIndex]['sub'][classIndex];
+                    modal.find("#select-up-class").val(classUpIndex);
+                } else {
+                    classIndex = parseInt(index);
+                    menuClass = WebStack['Menu'][classIndex];
+                    modal.find("#select-up-class").val("");
+                }
+                modal.find("#class-name").val(menuClass['name']);
+                modal.find("#select-class-icon").val(menuClass['icon']);
+                $("#select-class-icon").prev().find("i").attr("class", menuClass['icon']);
+            }
         });
 
         $('#modal-web-delete').on('show.bs.modal', function (event) {
