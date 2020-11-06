@@ -720,9 +720,10 @@
             let type  = button.data('class');
             let modal = $(this)
             if (type == 'add') {
-                modal.find("#class-name").val("");
-                modal.find("#select-class-icon").val("");
-                modal.find("#select-up-class").val("");
+                modal.find('.modal-title').text("添加分类");
+                modal.find(".modal-body #class-name").val("");
+                modal.find(".modal-body #select-class-icon").val("");
+                modal.find(".modal-body #select-up-class").val("");
             }
             if (type == 'edit') {
                 let classIndex = 0;
@@ -739,8 +740,9 @@
                     menuClass = WebStack['Menu'][classIndex];
                     modal.find("#select-up-class").val("");
                 }
-                modal.find("#class-name").val(menuClass['name']);
-                modal.find("#select-class-icon").val(menuClass['icon']);
+                modal.find('.modal-title').text("编辑分类【"+menuClass['name']+"】");
+                modal.find(".modal-body #class-name").val(menuClass['name']);
+                modal.find(".modal-body #select-class-icon").val(menuClass['icon']);
                 $("#select-class-icon").prev().find("i").attr("class", menuClass['icon']);
             }
         });
