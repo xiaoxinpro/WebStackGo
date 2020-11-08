@@ -366,10 +366,11 @@
                         <form class="form-horizontal">
                             <div class="form-group">
                                 <label for="adminUsername" class="col-sm-2 control-label">登陆入口</label>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="adminLogin" placeholder="输入新登陆账号" value="{{.login.Username}}" required>
+                                <div class="col-sm-6 col-md-7">
+                                    <input type="text" class="form-control" id="adminLogin" placeholder="输入新登陆入口" value="{{.login.Path}}" required>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="visible-xs"><br></div>
+                                <div class="col-sm-3 col-md-2">
                                     <button type="submit" class="btn btn-info btn-block">修改入口</button>
                                 </div>
                             </div>
