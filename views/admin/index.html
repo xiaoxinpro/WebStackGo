@@ -88,7 +88,6 @@
                     <div class="mobile-menu-toggle visible-xs">
                         <a href="#" data-toggle="user-info-menu">
                             <i class="fa-bell-o"></i>
-                            <span class="badge badge-success">7</span>
                         </a>
                         <a href="#" data-toggle="mobile-menu">
                             <i class="fa-bars"></i>
@@ -325,6 +324,56 @@
                     <div class="title-env">
                         <h1 class="title">用户设置</h1>
                         <p class="description">设置管理员登陆信息</p>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">后台用户</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label for="adminUsername" class="col-sm-2 control-label">登陆账号</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="adminUsername" placeholder="输入新登陆账号" value="{{.login.Username}}" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="amdinPassword" class="col-sm-2 control-label">登陆密码</label>
+                                <div class="col-sm-9">
+                                    <input type="password" class="form-control" id="amdinPassword" placeholder="输入新登陆密码" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="amdinPassword2" class="col-sm-2 control-label">确认密码</label>
+                                <div class=" col-sm-9">
+                                    <input type="password" class="form-control" id="amdinPassword2" placeholder="再次输入新登陆密码" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-9 col-sm-2">
+                                    <button type="submit" class="btn btn-success btn-block">修改</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">后台入口</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label for="adminUsername" class="col-sm-2 control-label">登陆入口</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="adminLogin" placeholder="输入新登陆账号" value="{{.login.Username}}" required>
+                                </div>
+                                <div class="col-sm-3">
+                                    <button type="submit" class="btn btn-info btn-block">修改入口</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -668,13 +717,6 @@
             }
         });
 
-        function menu(page) {
-            $(".page").hide();
-            $(".has-sub").removeClass("active");
-            $("#"+page).show();
-            $("#menu-"+page).addClass("active");
-        }
-
         $(document).on('click', '.has-sub', function(){
             let that = $(this)
             let page = that.attr('data-page');
@@ -860,6 +902,13 @@
             '<button id="btn-web-delete" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#modal-web-delete" data-index="'+index+'"><i class="linecons-trash"></i>删除</button>' +
             '</td>' +
             '</tr>');
+    }
+
+    function menu(page) {
+        $(".page").hide();
+        $(".has-sub").removeClass("active");
+        $("#"+page).show();
+        $("#menu-"+page).addClass("active");
     }
 
     function logout() {
