@@ -218,6 +218,19 @@ func GetToken(username, password string, now int64) string {
 	return fmt.Sprintf("%s|%d",GetMD5(fmt.Sprintf("%s|%s|%d", username, password, now)), now)
 }
 
+func SaveFile(path string, data []byte) error {
+	err := ioutil.WriteFile(path, data, os.ModePerm)
+	return err
+}
+
+func SaveJsonFile(path string, obj interface{}) error {
+	content, err := json.Marshal(obj)
+	if err == nil {
+		err = SaveFile(path, content)
+	}
+	return err
+}
+
 func LoadFile(path string) ([]byte, error) {
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
