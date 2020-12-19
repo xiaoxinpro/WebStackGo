@@ -207,7 +207,7 @@
                         <button class="btn btn-info btn-lg btn-block" data-toggle="modal" data-target="#modal-class-edit" data-index="-">添加</button>
                     </div>
                     <div class="col-sm-2 col-sm-offset-8">
-                        <button class="btn btn-success btn-lg btn-block">保存</button>
+                        <button class="btn btn-success btn-lg btn-block" id="class-save-sort" style="display: none;">保存排序</button>
                     </div>
                 </div>
                 <ul class="list-group nested-sortable" id="menu-table">
@@ -929,6 +929,11 @@
                 delay: 300,
                 fallbackOnBody: true,
                 chosenClass: 'list-class-item-action', //选中样式
+                // 列表内元素顺序更新的时候触发
+                onUpdate: function (evt) {
+                    // same properties as onEnd
+                    $("#class-save-sort").show();
+                },
                 // // 元素被选中
                 // onChoose: function (evt) {
                 //     // console.log("元素被选中", evt.item);
