@@ -172,7 +172,7 @@
             <!-- Choose between footer styles: "footer-type-1" or "footer-type-2" -->
             <!-- Add class "sticky" to  always stick the footer to the end of page (if page contents is small) -->
             <!-- Or class "fixed" to  always fix the footer to the end of page -->
-            <footer class="main-footer sticky footer-type-1">
+            <footer class="main-footer fixed footer-type-1">
                 <div class="footer-inner">
                     <!-- Add your copyright text here -->
                     <div class="footer-text">
@@ -184,11 +184,17 @@
                         <a href="http://viggoz.com" target="_blank">
                             <strong>Viggo</strong>
                         </a>
-                        <!--  - Purchase for only <strong>23$</strong> -->
+                        backstage by
+                        <a href="https://github.com/xiaoxinpro/WebStackGo" target="_blank">
+                            <strong>WebStackGo</strong>
+                        </a>
                     </div>
                     <!-- Go to Top Link, just add rel="go-top" to any link to add this functionality -->
                     <div class="go-up">
-                        <a href="#" rel="go-top">
+                        <a href="http://beian.miit.gov.cn" target="_blank" style="background-color: unset;">
+                            {{.config.Recordcode}}
+                        </a>
+                        <a href="#" target="_blank" rel="go-top">
                             <i class="fa-angle-up"></i>
                         </a>
                     </div>
