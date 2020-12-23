@@ -80,6 +80,7 @@ func main() {
 		fmt.Println(err)
 		return
 	} else {
+		//err = SaveJsonFile("./json/config.json", &Config)
 		if Config.Port <= 0 || Config.Port > 65535 {
 			Config.Port = 2802
 		}
