@@ -149,11 +149,18 @@ func GetAdmin(c *gin.Context)  {
 }
 
 func GetLogin(c *gin.Context)  {
-	c.HTML(http.StatusOK, "admin/login.html", gin.H{
-		"config": Config,
-		"success": false,
-		"message": "",
-	})
+	if c.FullPath() == Login.Path {
+		c.HTML(http.StatusOK, "admin/login.html", gin.H{
+			"config": Config,
+			"success": false,
+			"message": "",
+		})
+	} else {
+		c.HTML(http.StatusUnauthorized, "admin/login.html", gin.H{
+			"error": 401,
+			"message": "The login page has been modified.",
+		})
+	}
 }
 
 func PostLogin(c *gin.Context)  {
