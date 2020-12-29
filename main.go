@@ -104,6 +104,7 @@ func main() {
 	r.Use(AuthMiddleWare())
 	{
 		r.GET("/admin", AuthMiddleWare(), GetAdmin)
+		r.POST("/admin", AuthMiddleWare(), PostAdmin)
 	}
 
 	r.Run(fmt.Sprintf("%s:%d",Config.Url, Config.Port))
@@ -144,6 +145,22 @@ func GetAdmin(c *gin.Context)  {
 			"login": Login,
 			"config": Config,
 			"webstack": WebStack,
+		})
+	}
+}
+
+func PostAdmin(c *gin.Context) {
+	cmd := c.DefaultQuery("cmd", "null")
+	switch cmd {
+	case "user":
+	case "login_path":
+	case "stack":
+	case "class":
+	case "web":
+	default:
+		c.JSON(http.StatusFound, gin.H{
+			"message": "Error 302",
+			"error": 302,
 		})
 	}
 }
