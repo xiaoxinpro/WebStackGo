@@ -132,7 +132,7 @@ func GetAdmin(c *gin.Context)  {
 		c.JSON(http.StatusOK, gin.H{
 			"cmd": cmd,
 			"message": "退出登陆成功",
-			"err": 0,
+			"error": 0,
 		})
 	case "webstack.json":
 		c.JSON(http.StatusOK, WebStack)
@@ -152,8 +152,8 @@ func GetAdmin(c *gin.Context)  {
 func PostAdmin(c *gin.Context) {
 	cmd := c.DefaultQuery("cmd", "null")
 	switch cmd {
-	case "user":
 	case "login_path":
+	case "user":
 	case "stack":
 	case "class":
 	case "web":
