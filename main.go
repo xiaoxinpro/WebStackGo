@@ -153,6 +153,10 @@ func PostAdmin(c *gin.Context) {
 	cmd := c.DefaultQuery("cmd", "null")
 	switch cmd {
 	case "login_path":
+		c.JSON(http.StatusOK, gin.H{
+			"message": "OK",
+			"error": 0,
+		})
 	case "user":
 	case "stack":
 	case "class":
