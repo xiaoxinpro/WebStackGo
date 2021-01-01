@@ -452,13 +452,14 @@
                                 $("#adminLoginSubmit").on('click', function () {
                                     let $btn = $(this).button('loading');
                                     let path = $("#adminLogin").val();
-                                    submit("?cmd=login_path",{'path': path}, function (res) {
+                                    submit("?cmd=login_path",{path: path}, function (res) {
                                         $btn.button('reset');
                                         if (res['error'] === 0) {
-                                            console.log('OK');
-                                            reload();
+                                            message('成功', res['message'], function () {
+                                                reload();
+                                            });
                                         } else {
-                                            console.log('Error');
+                                            message('错误', res['message']);
                                         }
                                     });
                                 })
@@ -760,6 +761,43 @@
                 </div>
             </div>
         </div>
+    </div>
+    <!-- 提示框Modal -->
+    <div class="modal fade" id="modal-message" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modal-message-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="" id="modal-message-text" style="width: 100%"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" id="modal-message-btn-ok">确定</button>
+                    <button type="button" class="btn btn-white" id="modal-message-btn-close">关闭</button>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            function message(title, text="", callback=null) {
+                var fn_close, fn_ok;
+                $('#modal-message-title').text(title);
+                $('#modal-message-text').text(text);
+                $('#modal-message-btn-close').bind('click', fn_close = function () {
+                    if (callback) callback('close');
+                    $('#modal-message').modal('hide');
+                    $('#modal-message-btn-close').unbind('click', fn_close);
+                    $('#modal-message-btn-ok').unbind('click', fn_ok);
+                });
+                $('#modal-message-btn-ok').bind('click', fn_ok = function () {
+                    if (callback) callback('ok');
+                    $('#modal-message').modal('hide');
+                    $('#modal-message-btn-close').unbind('click', fn_close);
+                    $('#modal-message-btn-ok').unbind('click', fn_ok);
+                });
+                $('#modal-message').modal('show');
+            }
+        </script>
     </div>
     <!-- Imported styles on this page -->
     <link rel="stylesheet" href="assets/js/dropzone/css/dropzone.css">
