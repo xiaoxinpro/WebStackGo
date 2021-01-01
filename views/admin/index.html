@@ -997,6 +997,21 @@
         $("#"+page).show();
         $("#menu-"+page).addClass("active");
     }
+    
+    function submit(url, data, callback) {
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            success: function(res){
+                console.log(res);
+                if (callback) {
+                    callback(res);
+                }
+            }
+        });
+    }
 
     function logout() {
         $.get("?cmd=logout", function (res) {
