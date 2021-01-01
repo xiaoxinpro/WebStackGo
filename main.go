@@ -153,10 +153,33 @@ func PostAdmin(c *gin.Context) {
 	cmd := c.DefaultQuery("cmd", "null")
 	switch cmd {
 	case "login_path":
-		c.JSON(http.StatusOK, gin.H{
+		json := make(map[string]string)
+		c.BindJSON(&json)
+		ret := gin.H{
 			"message": "OK",
 			"error": 0,
-		})
+		}
+		if _, ok := json["path"]; !ok {
+			ret["message"] = "无效数据"
+			ret["error"] = 100
+		} else if len(json["path"]) < 2 {
+			ret["message"] = "登陆入口不可为空"
+			ret["error"] = 101
+		} else if string([]byte(json["path"])[:1]) != "/" {
+			ret["message"] = "登陆入口格式错误，必须以/开头。"
+			ret["error"] = 102
+		} else {
+			Login.Path = json["path"]
+			err := SaveJsonFile("./json/login.json", &Login)
+			if err == nil {
+				ret["message"] = "登陆入口修改成功，重启WebStaskGo服务后生效。"
+				ret["error"] = 0
+			} else {
+				ret["message"] = err.Error()
+				ret["error"] = 103
+			}
+		}
+		c.JSON(http.StatusOK, ret)
 	case "user":
 	case "stack":
 	case "class":
