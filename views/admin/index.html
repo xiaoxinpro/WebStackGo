@@ -459,7 +459,9 @@
                                                 reload();
                                             });
                                         } else {
-                                            message('错误', res['message']);
+                                            message('错误', res['message'], function () {
+                                                $("#adminLogin").focus();
+                                            });
                                         }
                                     });
                                 })
