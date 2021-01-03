@@ -151,15 +151,16 @@ func GetAdmin(c *gin.Context)  {
 
 func PostAdmin(c *gin.Context) {
 	cmd := c.DefaultQuery("cmd", "null")
+	json := make(map[string]string)
+	c.BindJSON(&json)
+	ret := gin.H{
+		"message": "OK",
+		"error": 0,
+	}
+	var ok bool
 	switch cmd {
 	case "login_path":
-		json := make(map[string]string)
-		c.BindJSON(&json)
-		ret := gin.H{
-			"message": "OK",
-			"error": 0,
-		}
-		if _, ok := json["path"]; !ok {
+		if _, ok = json["path"]; !ok {
 			ret["message"] = "无效数据"
 			ret["error"] = 100
 		} else if len(json["path"]) < 2 {
