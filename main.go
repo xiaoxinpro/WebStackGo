@@ -182,6 +182,46 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
 	case "user":
+		json["username"] = strings.TrimSpace(json["username"])
+		json["password"] = strings.TrimSpace(json["password"])
+		json["password2"] = strings.TrimSpace(json["password2"])
+		if IsJsonKey(json, "username") && IsJsonKey(json, "password") && IsJsonKey(json, "password2") {
+			if len(json["username"]) < 2 {
+				ret["key"] = "username"
+				ret["message"] = "登陆账号太短，请输入大于2个字符。"
+				ret["error"] = 111
+			} else if len(json["password"]) < 6 && json["password"] != "" {
+				ret["key"] = "password"
+				ret["message"] = "登陆密码太短，请输入大于6个字符。"
+				ret["error"] = 111
+			} else if json["password"] != json["password2"] {
+				ret["key"] = "password2"
+				ret["message"] = "确认密码与登陆密码不相同，请重新输入。"
+				ret["error"] = 111
+			} else {
+				message := ""
+				if Login.Username != json["username"] {
+					Login.Username = json["username"]
+					message += "登陆账号修改完成，"
+				}
+				if json["password"] != "" && Login.Password != GetMD5(json["password"]) {
+					Login.Password = GetMD5(json["password"])
+					message += "登陆密码修改完成，"
+				}
+				err := SaveJsonFile("./json/login.json", &Login)
+				if err == nil {
+					ret["message"] = message + "请重新前往登陆页面登陆。"
+					ret["error"] = 0
+				} else {
+					ret["message"] = err.Error()
+					ret["error"] = 112
+				}
+			}
+		} else {
+			ret["message"] = "缺少有效数据"
+			ret["error"] = 110
+		}
+		c.JSON(http.StatusOK, ret)
 	case "stack":
 	case "class":
 	case "web":
@@ -259,6 +299,11 @@ func AuthMiddleWare() gin.HandlerFunc {
 func IsExist(f string) bool {
 	_, err := os.Stat(f)
 	return err == nil || os.IsExist(err)
+}
+
+func IsJsonKey(m map[string]string, k string) bool {
+	_, ret := m[k]
+	return ret
 }
 
 func GetMD5(str string) string {
