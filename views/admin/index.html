@@ -426,7 +426,7 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-sm-offset-9 col-sm-2">
-                                    <button id="adminUserSubmit" class="btn btn-success btn-block" data-loading-text="加载中..." autocomplete="off">修改</button>
+                                    <button id="adminUserSubmit" class="btn btn-success btn-block" data-loading-text="加载中...">修改</button>
                                 </div>
                             </div>
                             <script type="text/javascript">
@@ -441,7 +441,7 @@
                                         $btn.button('reset');
                                         if (res['error'] === 0) {
                                             message('成功', res['message'], function () {
-                                                reload();
+                                                logout();
                                             });
                                         } else {
                                             message('错误', res['message']);
@@ -465,7 +465,7 @@
                                 </div>
                                 <div class="visible-xs"><br></div>
                                 <div class="col-sm-3 col-md-2">
-                                    <button id="adminLoginSubmit" class="btn btn-info btn-block" data-loading-text="加载中..." autocomplete="off">修改入口</button>
+                                    <button id="adminLoginSubmit" class="btn btn-info btn-block" data-loading-text="加载中...">修改入口</button>
                                 </div>
                             </div>
                             <script type="text/javascript">
