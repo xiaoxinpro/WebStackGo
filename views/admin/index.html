@@ -204,10 +204,10 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-2">
-                        <button class="btn btn-info btn-lg btn-block" data-toggle="modal" data-target="#modal-class-edit" data-index="-">添加</button>
+                        <button type="button" class="btn btn-info btn-lg btn-block" data-toggle="modal" data-target="#modal-class-edit" data-index="-">添加</button>
                     </div>
                     <div class="col-sm-3 col-sm-offset-7 col-md-2 col-md-offset-8">
-                        <button class="btn btn-success btn-lg btn-block" id="class-save-sort" style="display: none;">保存排序</button>
+                        <button type="button" class="btn btn-success btn-lg btn-block" id="class-save-sort" style="display: none;">保存排序</button>
                     </div>
                 </div>
                 <ul class="list-group nested-sortable" id="menu-table">
@@ -389,7 +389,7 @@
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-10 col-sm-2">
-                        <button type="submit" class="btn btn-info btn-block">保存</button>
+                        <button type="button" class="btn btn-info btn-block">保存</button>
                     </div>
                 </div>
             </div>
@@ -426,7 +426,7 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-sm-offset-9 col-sm-2">
-                                    <button id="adminUserSubmit" class="btn btn-success btn-block" data-loading-text="加载中...">修改</button>
+                                    <button type="button" id="adminUserSubmit" class="btn btn-success btn-block" data-loading-text="加载中...">修改</button>
                                 </div>
                             </div>
                             <script type="text/javascript">
@@ -465,7 +465,7 @@
                                 </div>
                                 <div class="visible-xs"><br></div>
                                 <div class="col-sm-3 col-md-2">
-                                    <button id="adminLoginSubmit" class="btn btn-info btn-block" data-loading-text="加载中...">修改入口</button>
+                                    <button type="button" id="adminLoginSubmit" class="btn btn-info btn-block" data-loading-text="加载中...">修改入口</button>
                                 </div>
                             </div>
                             <script type="text/javascript">
@@ -1060,8 +1060,8 @@
             '<td class="hidden-xs hidden-sm"><span class="email">' + webItem.url +'</span></td>' +
             '<td class="hidden-xs hidden-sm" style=" white-space:nowrap"><span class="email">'+menuName+'</span></td>' +
             '<td class="action-links text-center" style="width: auto;">' +
-            '<button id="btn-web-edit" class="btn btn-success btn-xs" data-toggle="modal" data-target="#modal-web-edit" data-index="'+index+'"><i class="linecons-pencil"></i>编辑</button>' +
-            '<button id="btn-web-delete" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#modal-web-delete" data-index="'+index+'"><i class="linecons-trash"></i>删除</button>' +
+            '<button type="button" id="btn-web-edit" class="btn btn-success btn-xs" data-toggle="modal" data-target="#modal-web-edit" data-index="'+index+'"><i class="linecons-pencil"></i>编辑</button>' +
+            '<button type="button" id="btn-web-delete" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#modal-web-delete" data-index="'+index+'"><i class="linecons-trash"></i>删除</button>' +
             '</td>' +
             '</tr>');
     }
