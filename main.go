@@ -182,10 +182,10 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
 	case "user":
-		json["username"] = strings.TrimSpace(json["username"])
-		json["password"] = strings.TrimSpace(json["password"])
-		json["password2"] = strings.TrimSpace(json["password2"])
 		if IsJsonKey(json, "username") && IsJsonKey(json, "password") && IsJsonKey(json, "password2") {
+			json["username"] = strings.TrimSpace(json["username"])
+			json["password"] = strings.TrimSpace(json["password"])
+			json["password2"] = strings.TrimSpace(json["password2"])
 			if len(json["username"]) < 2 {
 				ret["key"] = "username"
 				ret["message"] = "登陆账号太短，请输入大于2个字符。"
@@ -223,7 +223,7 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
 	case "stack":
-	case "class":
+ 	case "class":
 	case "web":
 	default:
 		c.JSON(http.StatusFound, gin.H{
