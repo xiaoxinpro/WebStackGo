@@ -223,6 +223,38 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
 	case "stack":
+		if IsJsonKey(json, "title") {
+			Config.Title = json["title"]
+		}
+		if IsJsonKey(json, "description") {
+			Config.Description = json["description"]
+		}
+		if IsJsonKey(json, "keywords") {
+			Config.Keywords = json["keywords"]
+		}
+		if IsJsonKey(json, "recordcode") {
+			Config.Recordcode = json["recordcode"]
+		}
+		if IsJsonKey(json, "footer") {
+			Config.Footer = json["footer"]
+		}
+		if IsJsonKey(json, "url") {
+			Config.Url = strings.TrimSpace(json["url"])
+		}
+		if IsJsonKey(json, "port") {
+			if port, err := strconv.Atoi(json["port"]); err != nil && port > 0 && port < 65535 {
+				Config.Port = port
+			}
+		}
+		err := SaveJsonFile("./json/config.json", &Config)
+		if err == nil {
+			ret["message"] = "网页设置保存完成"
+			ret["error"] = 0
+		} else {
+			ret["message"] = err.Error()
+			ret["error"] = 122
+		}
+		c.JSON(http.StatusOK, ret)
  	case "class":
 	case "web":
 	default:
