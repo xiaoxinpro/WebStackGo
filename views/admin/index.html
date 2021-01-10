@@ -296,7 +296,7 @@
                                         </tbody>
                                     </table>
                                     <div class="members-table-actions">
-                                        <a href="#" class="add">全选</a>
+                                        <a href="javascript:void(0);" onclick="webstack_select_all({{$index}});" class="add">全选</a>
                                         <div class="selected-items">
                                             已选中 <span id="webstack-class-selected-{{$index}}">0</span> 个项目
                                         </div>
@@ -307,6 +307,19 @@
                                 </div>
                             {{end}}
                         {{end}}
+                            <script type="text/javascript">
+                                function webstack_select_all(class_id) {
+                                    if ($("#webstack-class-" + class_id + " a.add").text() == "全选") {
+                                        $("#webstack-class-" + class_id + " input.cbr").prop("checked", true);
+                                        $("#webstack-class-" + class_id + " a.add").text("反全选");
+                                        $("#webstack-class-selected-" + class_id).text($("#webstack-class-" + class_id + " input.cbr").size());
+                                    } else {
+                                        $("#webstack-class-" + class_id + " input.cbr").prop("checked", false);
+                                        $("#webstack-class-" + class_id + " a.add").text("全选");
+                                        $("#webstack-class-selected-" + class_id).text("0");
+                                    }
+                                }
+                            </script>
                         </div>
                     </div>
                 </div>
