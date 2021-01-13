@@ -816,10 +816,62 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-info">保存</button>
+                    <button type="button" class="btn btn-info" id="webstackSaveSubmit" data-loading-text="保存中...">保存</button>
                 </div>
             </div>
         </div>
+        <script type="text/javascript">
+            $("#webstackSaveSubmit").on('click', function () {
+                let $btn = $(this).button('loading');
+                let modal = $("#modal-web-edit");
+                let title = modal.find('.modal-title').text();
+                if (title.indexOf("添加") >= 0) {
+                    console.log(title, true);
+                    webstackAddSubmit(modal, function (res) {
+                        $btn.button('reset');
+                        webstackSaveSubmitCallback(res);
+                    });
+                } else {
+                    console.log(title, false);
+                    webstackEditSubmit(modal, function (res) {
+                        $btn.button('reset');
+                        webstackSaveSubmitCallback(res);
+                    });
+                }
+            });
+
+            function webstackSaveSubmitCallback(res) {
+                if (res['error'] === 0) {
+                    message('成功', res['message'], function () {
+                        reload();
+                    });
+                } else {
+                    message('错误', res['message']);
+                }
+            }
+
+            function webstackAddSubmit(modal, callback) {
+                let addData = {
+                    name: modal.find('.modal-body #web-name').val(), 
+                    url: modal.find('.modal-body #web-name').val(),
+                    mark: modal.find('.modal-body #web-mark').val(),
+                    class1_id: modal.find('.modal-body #select-class-1').val(),
+                    class2_id: modal.find('.modal-body #select-class-2').val(),
+                    class1_name: modal.find('.modal-body #select-class-1 option:selected').text(),
+                    class2_name: modal.find('.modal-body #select-class-2 option:selected').text(),
+                    img: "",
+                }
+                console.log(addData);
+                // submit("?cmd=web-add", addData, function (res) {
+                //     callback(res);
+                // });
+            }
+
+            function webstackEditSubmit(modal, callback) {
+
+            }
+
+        </script>
     </div>
     <!-- 提示框Modal -->
     <div class="modal fade" id="modal-message" data-backdrop="static" data-keyboard="false">
