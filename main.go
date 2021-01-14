@@ -255,8 +255,13 @@ func PostAdmin(c *gin.Context) {
 			ret["error"] = 122
 		}
 		c.JSON(http.StatusOK, ret)
+	case "web-add":
+		if IsJsonKey(json, "class1_name") && IsJsonKey(json,"class2_name") {
+			classid := GetClassId(json["class1_name"], json["class2_name"])
+			fmt.Println(classid, WebStack.Class[classid])
+		}
+		c.JSON(http.StatusOK, ret)
  	case "class":
-	case "web":
 	default:
 		c.JSON(http.StatusFound, gin.H{
 			"message": "Error 302",
@@ -381,4 +386,44 @@ func LoadJsonFile(path string, obj interface{}) error {
 		fmt.Println(err)
 	}
 	return err
+}
+
+func GetClassId(name1 string, name2 string) int {
+	index := 0
+	name := ""
+	for _, menu := range WebStack.Menu {
+		if menu.Name == name1 {
+			if len(menu.Sub) > 0 {
+				for _, subMenu := range menu.Sub {
+					if subMenu.Name == name2 {
+						name = name2
+					}
+				}
+			} else {
+				name = name1
+			}
+			break;
+		}
+		index += len(menu.Sub)
+	}
+	if name != "" {
+		for ; index < len(WebStack.Class); index++ {
+			if WebStack.Class[index].Name == name {
+				return index
+			}
+		}
+	}
+	return -1
+}
+
+func AddClassData(classid int, classData map[string]string) bool {
+	if classid < 0 || classid > len(WebStack.Class) {
+		return false
+	}
+	append(WebStack.Class[classid].Rows, JsClassItem{
+		Url:  classData["url"],
+		Img:  classData["img"],
+		Name: classData["name"],
+		Mark: classData["mark"],
+	})
 }
