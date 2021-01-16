@@ -150,7 +150,11 @@
                         <div class="xe-widget xe-conversations box2 label-info" style="padding: 15px;" onclick="window.open('{{$item.Url}}', '_blank')" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="{{$item.Url}}">
                             <div class="xe-comment-entry">
                                 <a class="xe-user-img">
+                                    {{if eq $item.Img ""}}
+                                    <img data-src="../assets/images/logos/null.png" class="lozad img-circle" width="40">
+                                    {{else}}
                                     <img data-src="{{$item.Img}}" class="lozad img-circle" width="40">
+                                    {{end}}
                                 </a>
                                 <div class="xe-comment">
                                     <a href="#" class="xe-user-name overflowClip_1">
