@@ -853,7 +853,7 @@
             function webstackAddSubmit(modal, callback) {
                 let addData = {
                     name: modal.find('.modal-body #web-name').val(), 
-                    url: modal.find('.modal-body #web-name').val(),
+                    url: modal.find('.modal-body #web-url').val(),
                     mark: modal.find('.modal-body #web-mark').val(),
                     class1_id: modal.find('.modal-body #select-class-1').val(),
                     class2_id: modal.find('.modal-body #select-class-2').val(),
@@ -862,9 +862,9 @@
                     img: "",
                 }
                 console.log(addData);
-                // submit("?cmd=web-add", addData, function (res) {
-                //     callback(res);
-                // });
+                submit("?cmd=web-add", addData, function (res) {
+                    callback(res);
+                });
             }
 
             function webstackEditSubmit(modal, callback) {
@@ -1142,9 +1142,12 @@
     }
 
     function addWebTableItem(tbody, webItem, menuName, index) {
+        if (webItem.img == "") {
+            webItem.img = "../assets/images/logos/null.png"
+        }
         tbody.append('<tr> ' +
             '<td class="user-cb"><input type="checkbox" class="cbr" name="members-list[]" value="'+index+'" onclick="checkWebClick(\''+index+'\');" /></td>' +
-            '<td class="user-image"><a href="#"><img src="'+ webItem.img +'" class="img-circle" alt="user-pic" /></a></td>' +
+            '<td class="user-image"><img src="'+ webItem.img +'" class="img-circle" alt="user-pic" /></td>' +
             '<td class="user-name"><span class="name">' + webItem.name +'</span><span class="hidden-xs">' + webItem.mark +'</span></td>' +
             '<td class="hidden-xs hidden-sm"><span class="email">' + webItem.url +'</span></td>' +
             '<td class="hidden-xs hidden-sm" style=" white-space:nowrap"><span class="email">'+menuName+'</span></td>' +
