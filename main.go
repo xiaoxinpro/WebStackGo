@@ -259,6 +259,26 @@ func PostAdmin(c *gin.Context) {
 		if IsJsonKey(json, "class1_name") && IsJsonKey(json,"class2_name") {
 			classid := GetClassId(json["class1_name"], json["class2_name"])
 			fmt.Println(classid, WebStack.Class[classid])
+			if IsJsonKey(json,"name") && IsJsonKey(json,"url") && IsJsonKey(json,"mark") && IsJsonKey(json,"img") {
+				if AddClassData(classid, json) {
+					if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
+						ret["message"] = "添加网址成功"
+						ret["error"] = 0
+					} else {
+						ret["message"] = err.Error()
+						ret["error"] = 133
+					}
+				} else {
+					ret["message"] = "无效的分类名称"
+					ret["error"] = 132
+				}
+			} else {
+				ret["message"] = "上报数据不完整"
+				ret["error"] = 131
+			}
+		} else {
+			ret["message"] = "上报数据不完整"
+			ret["error"] = 130
 		}
 		c.JSON(http.StatusOK, ret)
  	case "class":
@@ -420,10 +440,11 @@ func AddClassData(classid int, classData map[string]string) bool {
 	if classid < 0 || classid > len(WebStack.Class) {
 		return false
 	}
-	append(WebStack.Class[classid].Rows, JsClassItem{
+	WebStack.Class[classid].Rows = append(WebStack.Class[classid].Rows, JsClassItem{
 		Url:  classData["url"],
 		Img:  classData["img"],
 		Name: classData["name"],
 		Mark: classData["mark"],
 	})
+	return true
 }
