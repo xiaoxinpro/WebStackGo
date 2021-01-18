@@ -281,6 +281,32 @@ func PostAdmin(c *gin.Context) {
 			ret["error"] = 130
 		}
 		c.JSON(http.StatusOK, ret)
+	case "web-edit":
+		if IsJsonKey(json, "index") && IsJsonKey(json, "class1_name") && IsJsonKey(json,"class2_name") {
+			classid := GetClassId(json["class1_name"], json["class2_name"])
+			//fmt.Println(classid, WebStack.Class[classid])
+			if IsJsonKey(json,"name") && IsJsonKey(json,"url") && IsJsonKey(json,"mark") && IsJsonKey(json,"img") {
+				if EditClassData(classid, json) {
+					if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
+						ret["message"] = "编辑网址成功"
+						ret["error"] = 0
+					} else {
+						ret["message"] = err.Error()
+						ret["error"] = 143
+					}
+				} else {
+					ret["message"] = "无效的网址源信息"
+					ret["error"] = 142
+				}
+			} else {
+				ret["message"] = "上报数据不完整"
+				ret["error"] = 141
+			}
+		} else {
+			ret["message"] = "上报数据不完整"
+			ret["error"] = 140
+		}
+		c.JSON(http.StatusOK, ret)
  	case "class":
 	default:
 		c.JSON(http.StatusFound, gin.H{
@@ -447,4 +473,45 @@ func AddClassData(classid int, classData map[string]string) bool {
 		Mark: classData["mark"],
 	})
 	return true
+}
+
+func DeleteWebData(classid int, webid int) bool {
+	if classid >= 0 && webid >= 0 {
+		WebStack.Class[classid].Rows = append(WebStack.Class[classid].Rows[:webid], WebStack.Class[classid].Rows[webid+1:]...)
+		return true
+	} else {
+		return false
+	}
+}
+
+func EditClassData(classid int, classData map[string]string) bool {
+	arrIndex := strings.Split(classData["index"], "-")
+	oldClassId := -1
+	oldWebId := -1
+	if len(arrIndex) == 2 {
+		num1 , _ := strconv.Atoi(arrIndex[0])
+		oldWebId, _ = strconv.Atoi(arrIndex[1])
+		if(num1 >= 0 && num1 < len(WebStack.Menu)) {
+			oldClassId = GetClassId(WebStack.Menu[num1].Name, "")
+		}
+	} else if(len(arrIndex) == 3) {
+		num1 , _ := strconv.Atoi(arrIndex[0])
+		num2 , _ := strconv.Atoi(arrIndex[1])
+		oldWebId, _ = strconv.Atoi(arrIndex[2])
+		if(num1 >= 0 && num1 < len(WebStack.Menu)) {
+			oldClassId = GetClassId(WebStack.Menu[num1].Name, WebStack.Menu[num1].Sub[num2].Name)
+		}
+	}
+	if oldClassId >= 0 && oldWebId >= 0 {
+		if oldClassId == classid {
+			WebStack.Class[classid].Rows[oldWebId].Name = classData["name"]
+			WebStack.Class[classid].Rows[oldWebId].Url = classData["url"]
+			WebStack.Class[classid].Rows[oldWebId].Img = classData["ime"]
+			WebStack.Class[classid].Rows[oldWebId].Mark = classData["mark"]
+			return true
+		} else if AddClassData(classid, classData) {
+			return DeleteWebData(oldClassId, oldWebId)
+		}
+	}
+	return false
 }
