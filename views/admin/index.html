@@ -740,6 +740,7 @@
                                         <div class="form-group">
                                             <label for="web-name" class="control-label">名称</label>
                                             <input type="text" class="form-control" id="web-name" placeholder="网站名称">
+                                            <input type="hidden" id="web-index" value="">
                                         </div>
                                     </div>
                                 </div>
@@ -868,7 +869,21 @@
             }
 
             function webstackEditSubmit(modal, callback) {
-
+                let editData = {
+                    index: modal.find('.modal-body #web-index').val(),
+                    name: modal.find('.modal-body #web-name').val(),
+                    url: modal.find('.modal-body #web-url').val(),
+                    mark: modal.find('.modal-body #web-mark').val(),
+                    class1_id: modal.find('.modal-body #select-class-1').val(),
+                    class2_id: modal.find('.modal-body #select-class-2').val(),
+                    class1_name: modal.find('.modal-body #select-class-1 option:selected').text(),
+                    class2_name: modal.find('.modal-body #select-class-2 option:selected').text(),
+                    img: "",
+                }
+                console.log(editData);
+                submit("?cmd=web-edit", editData, function (res) {
+                    callback(res);
+                });
             }
 
         </script>
@@ -1075,6 +1090,7 @@
                     webIndex = arrData[2];
                 }
                 let webData = findWebClass(menuName)[webIndex];
+                modal.find('.modal-body #web-index').val(index);
                 modal.find('.modal-body #web-name').val(webData['name']);
                 modal.find('.modal-body #web-url').val(webData['url']);
                 modal.find('.modal-body #web-mark').val(webData['mark']);
@@ -1082,6 +1098,7 @@
                 modal.find('.modal-body #web-image').text("");
             } else {
                 modal.find('.modal-title').text("添加网站");
+                modal.find('.modal-body #web-index').val("");
                 modal.find('.modal-body #web-name').val("");
                 modal.find('.modal-body #web-url').val("");
                 modal.find('.modal-body #web-mark').val("");
