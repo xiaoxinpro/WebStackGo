@@ -307,6 +307,26 @@ func PostAdmin(c *gin.Context) {
 			ret["error"] = 140
 		}
 		c.JSON(http.StatusOK, ret)
+	case "web-delete":
+		if IsJsonKey(json, "index") {
+			classid, webid := WebIndex2ID(json["index"])
+			if DeleteWebData(classid, webid) {
+				if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
+					ret["message"] = "删除网址成功"
+					ret["error"] = 0
+				} else {
+					ret["message"] = err.Error()
+					ret["error"] = 152
+				}
+			} else {
+				ret["message"] = "无效的网址源信息"
+				ret["error"] = 151
+			}
+		} else {
+			ret["message"] = "上报数据不完整"
+			ret["error"] = 150
+		}
+		c.JSON(http.StatusOK, ret)
  	case "class":
 	default:
 		c.JSON(http.StatusFound, gin.H{
