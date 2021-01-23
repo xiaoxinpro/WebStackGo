@@ -434,6 +434,27 @@ func LoadJsonFile(path string, obj interface{}) error {
 	return err
 }
 
+func WebIndex2ID(index string) (int,int) {
+	arrIndex := strings.Split(index, "-")
+	classId := -1
+	webId := -1
+	if len(arrIndex) == 2 {
+		num1 , _ := strconv.Atoi(arrIndex[0])
+		webId, _ = strconv.Atoi(arrIndex[1])
+		if(num1 >= 0 && num1 < len(WebStack.Menu)) {
+			classId = GetClassId(WebStack.Menu[num1].Name, "")
+		}
+	} else if(len(arrIndex) == 3) {
+		num1 , _ := strconv.Atoi(arrIndex[0])
+		num2 , _ := strconv.Atoi(arrIndex[1])
+		webId, _ = strconv.Atoi(arrIndex[2])
+		if(num1 >= 0 && num1 < len(WebStack.Menu)) {
+			classId = GetClassId(WebStack.Menu[num1].Name, WebStack.Menu[num1].Sub[num2].Name)
+		}
+	}
+	return classId, webId
+}
+
 func GetClassId(name1 string, name2 string) int {
 	index := 0
 	name := ""
@@ -485,23 +506,7 @@ func DeleteWebData(classid int, webid int) bool {
 }
 
 func EditClassData(classid int, classData map[string]string) bool {
-	arrIndex := strings.Split(classData["index"], "-")
-	oldClassId := -1
-	oldWebId := -1
-	if len(arrIndex) == 2 {
-		num1 , _ := strconv.Atoi(arrIndex[0])
-		oldWebId, _ = strconv.Atoi(arrIndex[1])
-		if(num1 >= 0 && num1 < len(WebStack.Menu)) {
-			oldClassId = GetClassId(WebStack.Menu[num1].Name, "")
-		}
-	} else if(len(arrIndex) == 3) {
-		num1 , _ := strconv.Atoi(arrIndex[0])
-		num2 , _ := strconv.Atoi(arrIndex[1])
-		oldWebId, _ = strconv.Atoi(arrIndex[2])
-		if(num1 >= 0 && num1 < len(WebStack.Menu)) {
-			oldClassId = GetClassId(WebStack.Menu[num1].Name, WebStack.Menu[num1].Sub[num2].Name)
-		}
-	}
+	oldClassId, oldWebId := WebIndex2ID(classData["index"])
 	if oldClassId >= 0 && oldWebId >= 0 {
 		if oldClassId == classid {
 			WebStack.Class[classid].Rows[oldWebId].Name = classData["name"]
