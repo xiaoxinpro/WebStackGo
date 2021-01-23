@@ -665,14 +665,36 @@
                 </div>
                 <div class="modal-body">
                     <div class="" id="delete-message" style="width: 100%"></div>
+                    <input type="hidden" id="web-delete-index" value="">
                 </div>
                 <div class="modal-footer">
                     <div class="pull-left text-danger">注意：删除后将无法恢复，建议备份后删除！</div>
                     <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-danger">删除</button>
+                    <button type="button" class="btn btn-danger" id="webstackDeleteSubmit" data-loading-text="删除中...">删除</button>
                 </div>
             </div>
         </div>
+        <script type="text/javascript">
+            $("#webstackDeleteSubmit").on('click', function () {
+                let $btn = $(this).button('loading');
+                let modal = $("#modal-web-delete");
+                let deleteData = {
+                    index: modal.find('.modal-body #web-delete-index').val(),
+                }
+                console.log(deleteData);
+                submit("?cmd=web-delete", deleteData, function (res) {
+                    $btn.button('reset');
+                    console.log(res);
+                    if (res['error'] === 0) {
+                        message('成功', res['message'], function () {
+                            reload();
+                        });
+                    } else {
+                        message('错误', res['message']);
+                    }
+                });
+            });
+        </script>
     </div>
     <!-- 编辑网站Modal -->
     <div class="modal fade" id="modal-web-edit">
@@ -1062,8 +1084,9 @@
                     menuName = menuClass['sub'][arrData[1]]['name'];
                 }
                 let webData = findWebClass(menuName)[arrData[arrData.length-1]];
-                modal.find('.modal-title').text("删除网址【"+webData['name']+"】")
-                modal.find('.modal-body #delete-message').text("请谨慎决定是否要删除 【"+webData['name']+"】 "+webData['url']+" 网址吗？")
+                modal.find('.modal-title').text("删除网址【"+webData['name']+"】");
+                modal.find('.modal-body #web-delete-index').val(index);
+                modal.find('.modal-body #delete-message').text("请谨慎决定是否要删除 【"+webData['name']+"】 "+webData['url']+" 网址吗？");
             }
         });
 
