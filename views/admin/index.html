@@ -1216,6 +1216,16 @@
                 if (callback) {
                     callback(res);
                 }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error(jqXHR, textStatus, errorThrown);
+                if (textStatus == "error" && errorThrown == "Unauthorized") {
+                    message("错误 "+jqXHR.status, "发送命令失败，当前环境授权超时或未授权发送命令，请重新登陆再试。", function () {
+                        $(location).attr('href', '/');
+                    });
+                } else {
+                    message("错误 "+jqXHR.status, textStatus + "：" + errorThrown);
+                }
             }
         });
     }
