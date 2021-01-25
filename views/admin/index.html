@@ -1238,7 +1238,9 @@
         $.get("?cmd=logout", function (res) {
             console.log(res);
             $(location).attr('href', '/');
-        })
+        }).fail(function () {
+            $(location).attr('href', '/');
+        });
     }
     </script>
 </body>
