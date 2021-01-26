@@ -517,7 +517,7 @@ func AddClassData(classid int, classData map[string]string) bool {
 }
 
 func DeleteWebData(classid int, webid int) bool {
-	if classid >= 0 && webid >= 0 {
+	if classid >= 0 && webid >= 0 && classid < len(WebStack.Class) && webid < len(WebStack.Class[classid].Rows)  {
 		WebStack.Class[classid].Rows = append(WebStack.Class[classid].Rows[:webid], WebStack.Class[classid].Rows[webid+1:]...)
 		return true
 	} else {
