@@ -531,7 +531,7 @@ func EditClassData(classid int, classData map[string]string) bool {
 		if oldClassId == classid {
 			WebStack.Class[classid].Rows[oldWebId].Name = classData["name"]
 			WebStack.Class[classid].Rows[oldWebId].Url = classData["url"]
-			WebStack.Class[classid].Rows[oldWebId].Img = classData["ime"]
+			WebStack.Class[classid].Rows[oldWebId].Img = classData["img"]
 			WebStack.Class[classid].Rows[oldWebId].Mark = classData["mark"]
 			return true
 		} else if AddClassData(classid, classData) {
