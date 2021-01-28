@@ -752,6 +752,7 @@
                         </script>
                         <div class="col-md-12">
                             <div class="col-sm-4 text-center">
+                                <input type="hidden" id="web-image-url" value="">
                                 <div id="web-image" class="droppable-area">
                                     选择图片
                                 </div>
@@ -878,11 +879,11 @@
                     name: modal.find('.modal-body #web-name').val(), 
                     url: modal.find('.modal-body #web-url').val(),
                     mark: modal.find('.modal-body #web-mark').val(),
+                    img: modal.find('.modal-body #web-image-url').val(),
                     class1_id: modal.find('.modal-body #select-class-1').val(),
                     class2_id: modal.find('.modal-body #select-class-2').val(),
                     class1_name: modal.find('.modal-body #select-class-1 option:selected').text(),
                     class2_name: modal.find('.modal-body #select-class-2 option:selected').text(),
-                    img: "",
                 }
                 console.log(addData);
                 submit("?cmd=web-add", addData, function (res) {
@@ -896,11 +897,11 @@
                     name: modal.find('.modal-body #web-name').val(),
                     url: modal.find('.modal-body #web-url').val(),
                     mark: modal.find('.modal-body #web-mark').val(),
+                    img: modal.find('.modal-body #web-image-url').val(),
                     class1_id: modal.find('.modal-body #select-class-1').val(),
                     class2_id: modal.find('.modal-body #select-class-2').val(),
                     class1_name: modal.find('.modal-body #select-class-1 option:selected').text(),
                     class2_name: modal.find('.modal-body #select-class-2 option:selected').text(),
-                    img: "",
                 }
                 console.log(editData);
                 submit("?cmd=web-edit", editData, function (res) {
@@ -1117,6 +1118,7 @@
                 modal.find('.modal-body #web-name').val(webData['name']);
                 modal.find('.modal-body #web-url').val(webData['url']);
                 modal.find('.modal-body #web-mark').val(webData['mark']);
+                modal.find('.modal-body #web-image-url').val(webData['img']);
                 modal.find('.modal-body #web-image').css('background-image', 'url('+webData['img']+')');
                 modal.find('.modal-body #web-image').text("");
             } else {
@@ -1125,9 +1127,9 @@
                 modal.find('.modal-body #web-name').val("");
                 modal.find('.modal-body #web-url').val("");
                 modal.find('.modal-body #web-mark').val("");
+                modal.find('.modal-body #web-image-url').val("");
                 modal.find('.modal-body #web-image').css('background-image', 'none');
                 modal.find('.modal-body #web-image').text("选择图片");
-                // showSelectClass2(0, 0);
             }
             console.log("modal-web-edit", index);
         })
