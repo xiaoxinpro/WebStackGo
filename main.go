@@ -105,6 +105,7 @@ func main() {
 	{
 		r.GET("/admin", AuthMiddleWare(), GetAdmin)
 		r.POST("/admin", AuthMiddleWare(), PostAdmin)
+		r.POST("/admin/upload", AuthMiddleWare(), PostAdminUpload)
 	}
 
 	r.Run(fmt.Sprintf("%s:%d",Config.Url, Config.Port))
@@ -334,6 +335,13 @@ func PostAdmin(c *gin.Context) {
 			"error": 302,
 		})
 	}
+}
+
+func PostAdminUpload(c *gin.Context) {
+	// https://github.com/gin-gonic/examples/blob/master/upload-file/single/main.go
+	file, _ := c.FormFile("file")
+	// c.SaveUploadedFile(file, dst)
+	c.String(http.StatusOK, "%s uploaded!", file.Filename)
 }
 
 func GetLogin(c *gin.Context)  {
