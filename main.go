@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -339,9 +340,55 @@ func PostAdmin(c *gin.Context) {
 
 func PostAdminUpload(c *gin.Context) {
 	// https://github.com/gin-gonic/examples/blob/master/upload-file/single/main.go
-	file, _ := c.FormFile("file")
-	// c.SaveUploadedFile(file, dst)
-	c.String(http.StatusOK, "%s uploaded!", file.Filename)
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"message": err.Error(),
+			"error": 801,
+		})
+		return
+	}
+
+	//获取文件后缀
+	existing := strings.ToLower(Ext(file.Filename))
+	if existing == ""{
+		c.JSON(http.StatusOK, gin.H{
+			"message": "文件类型错误，无法上传。",
+			"error": 802,
+		})
+		return
+	}
+	extStrSlice := []string{".jpg",".png","gif"}
+	if !ContainArray(existing, extStrSlice) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "文件类型错误，请上传图片文件（jpg、png、gif）。",
+			"error": 803,
+		})
+		return
+	}
+
+	filepath := "public/images/uploads/"
+	//如果没有filepath文件目录就创建一个
+	if _, err := os.Stat(filepath); err != nil {
+		if !os.IsExist(err) {
+			os.MkdirAll(filepath, os.ModePerm)
+		}
+	}
+	path := filepath + file.Filename //路径+文件名上传
+
+	if err := c.SaveUploadedFile(file, path); err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"message": err.Error(),
+			"error": 804,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"url": "../assets/images/uploads/" + file.Filename,
+		"message": "upload file success.",
+		"error": 0,
+	})
 }
 
 func GetLogin(c *gin.Context)  {
@@ -547,4 +594,33 @@ func EditClassData(classid int, classData map[string]string) bool {
 		}
 	}
 	return false
+}
+
+//Contain 判断obj是否在target中，target支持的类型array,slice,map   false:不在 true:在
+func ContainArray(obj interface{}, target interface{}) bool {
+	targetValue := reflect.ValueOf(target)
+	switch reflect.TypeOf(target).Kind() {
+	case reflect.Slice, reflect.Array:
+		for i := 0; i < targetValue.Len(); i++ {
+			if targetValue.Index(i).Interface() == obj {
+				return true
+			}
+		}
+	case reflect.Map:
+		if targetValue.MapIndex(reflect.ValueOf(obj)).IsValid() {
+			return true
+		}
+	}
+
+	return false
+}
+
+//获取文件的扩展名
+func Ext(path string) string {
+	for i := len(path) - 1; i >= 0 && path[i] != '/'; i-- {
+		if path[i] == '.' {
+			return path[i:]
+		}
+	}
+	return ""
 }
