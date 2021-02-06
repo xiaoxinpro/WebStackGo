@@ -708,44 +708,56 @@
                     <div class="row">
                         <script type="text/javascript">
                         jQuery(document).ready(function($) {
-                            var i = 1,
-                            $example_dropzone_filetable = $("#example-dropzone-filetable"),
-                            example_dropzone = $("#web-image").dropzone({
+                            var modal = $('#modal-web-edit');
+                            $("#web-image").dropzone({
                                 url: '/admin/upload',
                                 // Events
                                 addedfile: function(file) {
-                                    if (i == 1) {
-                                        $example_dropzone_filetable.find('tbody').html('');
-                                    }
+                                    console.log(file);
+                                    modal.find('.modal-body #web-image').css('background-image', 'none');
+                                    modal.find('.modal-body #web-image').text("准备上传");
 
-                                    var size = parseInt(file.size / 1024, 10);
+                                    let size = parseInt(file.size / 1024, 10);
                                     size = size < 1024 ? (size + " KB") : (parseInt(size / 1024, 10) + " MB");
-
-                                    var $entry = $('<tr>\
-                                                <td class="text-center">' + (i++) + '</td>\
-                                                <td>' + file.name + '</td>\
-                                                <td><div class="progress progress-striped"><div class="progress-bar progress-bar-warning"></div></div></td>\
-                                                <td>' + size + '</td>\
-                                                <td>Uploading...</td>\
-                                            </tr>');
-
-                                    $example_dropzone_filetable.find('tbody').append($entry);
-                                    file.fileEntryTd = $entry;
-                                    file.progressBar = $entry.find('.progress-bar');
+                                    console.log(size);
                                 },
 
                                 uploadprogress: function(file, progress, bytesSent) {
-                                    file.progressBar.width(progress + '%');
+                                    console.log(file, progress, bytesSent);
+                                    modal.find('.modal-body #web-image').text("上传中 (" + progress + "%)");
+                                    //file.progressBar.width(progress + '%');
                                 },
 
                                 success: function(file) {
-                                    file.fileEntryTd.find('td:last').html('<span class="text-success">Uploaded</span>');
-                                    file.progressBar.removeClass('progress-bar-warning').addClass('progress-bar-success');
+                                    let res = JSON.parse(file.xhr.response);
+                                    console.log(file, res);
+                                    if (res.error == 0) {
+                                        modal.find('.modal-body #web-image').text("");
+                                        modal.find('.modal-body #web-image-url').val(res.url);
+                                        modal.find('.modal-body #web-image').css('background-image', 'url('+res.url+')');
+                                    } else {
+                                        modal.find('.modal-body #web-image').text("上传失败");
+                                        message("上传失败", res.message, function () {
+                                            let url = modal.find('.modal-body #web-image-url').val();
+                                            console.log(url);
+                                            if (url == ""){
+                                                modal.find('.modal-body #web-image').text("重新选择图片");
+                                                modal.find('.modal-body #web-image').css('background-image', 'none');
+                                            } else {
+                                                modal.find('.modal-body #web-image').text("");
+                                                modal.find('.modal-body #web-image').css('background-image', 'url('+url+')');
+                                            }
+                                        });
+                                    }
+                                    // file.fileEntryTd.find('td:last').html('<span class="text-success">Uploaded</span>');
+                                    // file.progressBar.removeClass('progress-bar-warning').addClass('progress-bar-success');
                                 },
 
                                 error: function(file) {
-                                    file.fileEntryTd.find('td:last').html('<span class="text-danger">Failed</span>');
-                                    file.progressBar.removeClass('progress-bar-warning').addClass('progress-bar-red');
+                                    console.log(file);
+                                    modal.find('.modal-body #web-image').text("上传失败");
+                                    // file.fileEntryTd.find('td:last').html('<span class="text-danger">Failed</span>');
+                                    // file.progressBar.removeClass('progress-bar-warning').addClass('progress-bar-red');
                                 }
                             });
                         });
