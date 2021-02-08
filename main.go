@@ -153,8 +153,8 @@ func GetAdmin(c *gin.Context)  {
 
 func PostAdmin(c *gin.Context) {
 	cmd := c.DefaultQuery("cmd", "null")
-	json := make(map[string]string)
-	c.BindJSON(&json)
+	jsonMap := make(map[string]string)
+	c.BindJSON(&jsonMap)
 	ret := gin.H{
 		"message": "OK",
 		"error": 0,
@@ -162,17 +162,17 @@ func PostAdmin(c *gin.Context) {
 	var ok bool
 	switch cmd {
 	case "login_path":
-		if _, ok = json["path"]; !ok {
+		if _, ok = jsonMap["path"]; !ok {
 			ret["message"] = "无效数据"
 			ret["error"] = 100
-		} else if len(json["path"]) < 2 {
+		} else if len(jsonMap["path"]) < 2 {
 			ret["message"] = "登陆入口不可为空"
 			ret["error"] = 101
-		} else if string([]byte(json["path"])[:1]) != "/" {
+		} else if string([]byte(jsonMap["path"])[:1]) != "/" {
 			ret["message"] = "登陆入口格式错误，必须以/开头。"
 			ret["error"] = 102
 		} else {
-			Login.Path = json["path"]
+			Login.Path = jsonMap["path"]
 			err := SaveJsonFile("./json/login.json", &Login)
 			if err == nil {
 				ret["message"] = "登陆入口修改成功，重启WebStaskGo服务后生效。"
@@ -184,30 +184,30 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
 	case "user":
-		if IsJsonKey(json, "username") && IsJsonKey(json, "password") && IsJsonKey(json, "password2") {
-			json["username"] = strings.TrimSpace(json["username"])
-			json["password"] = strings.TrimSpace(json["password"])
-			json["password2"] = strings.TrimSpace(json["password2"])
-			if len(json["username"]) < 2 {
+		if IsJsonKey(jsonMap, "username") && IsJsonKey(jsonMap, "password") && IsJsonKey(jsonMap, "password2") {
+			jsonMap["username"] = strings.TrimSpace(jsonMap["username"])
+			jsonMap["password"] = strings.TrimSpace(jsonMap["password"])
+			jsonMap["password2"] = strings.TrimSpace(jsonMap["password2"])
+			if len(jsonMap["username"]) < 2 {
 				ret["key"] = "username"
 				ret["message"] = "登陆账号太短，请输入大于2个字符。"
 				ret["error"] = 111
-			} else if len(json["password"]) < 6 && json["password"] != "" {
+			} else if len(jsonMap["password"]) < 6 && jsonMap["password"] != "" {
 				ret["key"] = "password"
 				ret["message"] = "登陆密码太短，请输入大于6个字符。"
 				ret["error"] = 111
-			} else if json["password"] != json["password2"] {
+			} else if jsonMap["password"] != jsonMap["password2"] {
 				ret["key"] = "password2"
 				ret["message"] = "确认密码与登陆密码不相同，请重新输入。"
 				ret["error"] = 111
 			} else {
 				message := ""
-				if Login.Username != json["username"] {
-					Login.Username = json["username"]
+				if Login.Username != jsonMap["username"] {
+					Login.Username = jsonMap["username"]
 					message += "登陆账号修改完成，"
 				}
-				if json["password"] != "" && Login.Password != GetMD5(json["password"]) {
-					Login.Password = GetMD5(json["password"])
+				if jsonMap["password"] != "" && Login.Password != GetMD5(jsonMap["password"]) {
+					Login.Password = GetMD5(jsonMap["password"])
 					message += "登陆密码修改完成，"
 				}
 				err := SaveJsonFile("./json/login.json", &Login)
@@ -225,26 +225,26 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
 	case "stack":
-		if IsJsonKey(json, "title") {
-			Config.Title = json["title"]
+		if IsJsonKey(jsonMap, "title") {
+			Config.Title = jsonMap["title"]
 		}
-		if IsJsonKey(json, "description") {
-			Config.Description = json["description"]
+		if IsJsonKey(jsonMap, "description") {
+			Config.Description = jsonMap["description"]
 		}
-		if IsJsonKey(json, "keywords") {
-			Config.Keywords = json["keywords"]
+		if IsJsonKey(jsonMap, "keywords") {
+			Config.Keywords = jsonMap["keywords"]
 		}
-		if IsJsonKey(json, "recordcode") {
-			Config.Recordcode = json["recordcode"]
+		if IsJsonKey(jsonMap, "recordcode") {
+			Config.Recordcode = jsonMap["recordcode"]
 		}
-		if IsJsonKey(json, "footer") {
-			Config.Footer = json["footer"]
+		if IsJsonKey(jsonMap, "footer") {
+			Config.Footer = jsonMap["footer"]
 		}
-		if IsJsonKey(json, "url") {
-			Config.Url = strings.TrimSpace(json["url"])
+		if IsJsonKey(jsonMap, "url") {
+			Config.Url = strings.TrimSpace(jsonMap["url"])
 		}
-		if IsJsonKey(json, "port") {
-			if port, err := strconv.Atoi(json["port"]); err != nil && port > 0 && port < 65535 {
+		if IsJsonKey(jsonMap, "port") {
+			if port, err := strconv.Atoi(jsonMap["port"]); err != nil && port > 0 && port < 65535 {
 				Config.Port = port
 			}
 		}
@@ -258,11 +258,11 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
 	case "web-add":
-		if IsJsonKey(json, "class1_name") && IsJsonKey(json,"class2_name") {
-			classid := GetClassId(json["class1_name"], json["class2_name"])
+		if IsJsonKey(jsonMap, "class1_name") && IsJsonKey(jsonMap,"class2_name") {
+			classid := GetClassId(jsonMap["class1_name"], jsonMap["class2_name"])
 			fmt.Println(classid, WebStack.Class[classid])
-			if IsJsonKey(json,"name") && IsJsonKey(json,"url") && IsJsonKey(json,"mark") && IsJsonKey(json,"img") {
-				if AddClassData(classid, json) {
+			if IsJsonKey(jsonMap,"name") && IsJsonKey(jsonMap,"url") && IsJsonKey(jsonMap,"mark") && IsJsonKey(jsonMap,"img") {
+				if AddClassData(classid, jsonMap) {
 					if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
 						ret["message"] = "添加网址成功"
 						ret["error"] = 0
@@ -284,11 +284,11 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
 	case "web-edit":
-		if IsJsonKey(json, "index") && IsJsonKey(json, "class1_name") && IsJsonKey(json,"class2_name") {
-			classid := GetClassId(json["class1_name"], json["class2_name"])
+		if IsJsonKey(jsonMap, "index") && IsJsonKey(jsonMap, "class1_name") && IsJsonKey(jsonMap,"class2_name") {
+			classid := GetClassId(jsonMap["class1_name"], jsonMap["class2_name"])
 			//fmt.Println(classid, WebStack.Class[classid])
-			if IsJsonKey(json,"name") && IsJsonKey(json,"url") && IsJsonKey(json,"mark") && IsJsonKey(json,"img") {
-				if EditClassData(classid, json) {
+			if IsJsonKey(jsonMap,"name") && IsJsonKey(jsonMap,"url") && IsJsonKey(jsonMap,"mark") && IsJsonKey(jsonMap,"img") {
+				if EditClassData(classid, jsonMap) {
 					if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
 						ret["message"] = "编辑网址成功"
 						ret["error"] = 0
@@ -310,23 +310,40 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
 	case "web-delete":
-		if IsJsonKey(json, "index") {
-			classid, webid := WebIndex2ID(json["index"])
+		isWebDeleteOk := false
+		if IsJsonKey(jsonMap, "index") {
+			classid, webid := WebIndex2ID(jsonMap["index"])
 			if DeleteWebData(classid, webid) {
-				if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
-					ret["message"] = "删除网址成功"
-					ret["error"] = 0
-				} else {
-					ret["message"] = err.Error()
-					ret["error"] = 152
-				}
+				isWebDeleteOk = true;
 			} else {
 				ret["message"] = "无效的网址源信息"
 				ret["error"] = 151
 			}
+		} else if IsJsonKey(jsonMap, "indexArray") {
+			var indexArray []string
+			err := json.Unmarshal([]byte(jsonMap["indexArray"]), &indexArray)
+			if err == nil {
+				for i:=0; i< len(indexArray); i++ {
+					classid, webid := WebIndex2ID(indexArray[i])
+					DeleteWebData(classid, webid)
+				}
+				isWebDeleteOk = true;
+			} else {
+				ret["message"] = "批量删除数据结构错误。"
+				ret["error"] = 153
+			}
 		} else {
 			ret["message"] = "上报数据不完整"
 			ret["error"] = 150
+		}
+		if isWebDeleteOk == true {
+			if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
+				ret["message"] = "删除网址成功"
+				ret["error"] = 0
+			} else {
+				ret["message"] = err.Error()
+				ret["error"] = 152
+			}
 		}
 		c.JSON(http.StatusOK, ret)
  	case "class":
