@@ -327,22 +327,22 @@
                                     }
                                     message("批量删除", "您正在执行批量删除功能，请确认将选中的" + cbrWeb.length + "个网址彻底删除，删除后将无法恢复！", function (ret) {
                                         if (ret == "ok") {
-                                            var cnt = 0;
+                                            var indexArray = new Array();
                                             for (let i=0;i<cbrWeb.length;i++) {
-                                                console.log(cbrWeb[i].value);
-                                                webstackDeleteSubmit(cbrWeb[i].value, function (res) {
-                                                    if (res['error'] === 0) {
-                                                        cnt = cnt + 1;
-                                                        if (cnt === cbrWeb.length) {
-                                                            message("成功", res["message"]);
-                                                            reload();
-                                                        }
-                                                    } else {
-                                                        message("错误", res["message"]);
-                                                        reload();
-                                                    }
-                                                })
+                                                indexArray.push(cbrWeb[i].value);
                                             }
+                                            indexArray = indexArray.reverse();
+                                            console.log(indexArray);
+                                            webstackDeleteSubmit(indexArray, function (res) {
+                                                reload();
+                                                // if (res['error'] === 0) {
+                                                //     message('成功', res['message'], function () {
+                                                //         reload();
+                                                //     });
+                                                // } else {
+                                                //     message('错误', res['message']);
+                                                // }
+                                            })
                                         }
                                     })
                                 }
@@ -703,8 +703,11 @@
         </div>
         <script type="text/javascript">
             function webstackDeleteSubmit(index, callback = null) {
-                let deleteData = {
-                    index: index,
+                let deleteData = {};
+                if (Array.isArray(index) === true) {
+                    deleteData['indexArray'] = JSON.stringify(index);
+                } else {
+                    deleteData['index'] = index;
                 }
                 submit("?cmd=web-delete", deleteData, function (res) {
                     if (callback) {
@@ -1134,6 +1137,9 @@
                 modal.find('.modal-title').text("删除网址【"+webData['name']+"】");
                 modal.find('.modal-body #web-delete-index').val(index);
                 modal.find('.modal-body #delete-message').text("请谨慎决定是否要删除 【"+webData['name']+"】 "+webData['url']+" 网址吗？");
+            } else {
+                modal.find('.modal-title').text("批量删除网址");
+                modal.find('.modal-body #delete-message').text("您正在执行批量删除功能，请确认是否将选中的网址全部彻底删除？");
             }
         });
 
