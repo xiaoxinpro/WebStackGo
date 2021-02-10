@@ -677,10 +677,64 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-info">保存</button>
+                    <button type="button" class="btn btn-info" id="classSaveSubmit" data-loading-text="保存中...">保存</button>
                 </div>
             </div>
         </div>
+        <script type="text/javascript">
+            $("#classSaveSubmit").on('click', function () {
+                let $btn = $(this).button('loading');
+                let modal = $("#modal-class-edit");
+                let title = modal.find('.modal-title').text();
+                if (title.indexOf("添加") >= 0) {
+                    console.log(title, true);
+                    classAddSubmit(modal, function (res) {
+                        $btn.button('reset');
+                        classSaveSubmitCallback(res);
+                    });
+                } else {
+                    console.log(title, false);
+                    classEditSubmit(modal, function (res) {
+                        $btn.button('reset');
+                        classSaveSubmitCallback(res);
+                    });
+                }
+            });
+
+            function classSaveSubmitCallback(res) {
+                if (res['error'] === 0) {
+                    message('成功', res['message'], function () {
+                        reload();
+                    });
+                } else {
+                    message('错误', res['message']);
+                }
+            }
+
+            function classAddSubmit(modal, callback) {
+                let addData = {
+                    name: modal.find('.modal-body #class-name').val(),
+                    icon: modal.find('.modal-body #select-class-icon option:selected').val(),
+                    class_up: modal.find('.modal-body #select-up-class option:selected').text(),
+                }
+                console.log(addData);
+                // submit("?cmd=class-add", addData, function (res) {
+                //     callback(res);
+                // });
+            }
+
+            function classEditSubmit(modal, callback) {
+                let editData = {
+                    name: modal.find('.modal-body #class-name').val(),
+                    icon: modal.find('.modal-body #select-class-icon option:selected').val(),
+                    class_up: modal.find('.modal-body #select-up-class option:selected').text(),
+                }
+                console.log(editData);
+                // submit("?cmd=class-edit", editData, function (res) {
+                //     callback(res);
+                // });
+            }
+        </script>
     </div>
     <!-- 删除网站Modal -->
     <div class="modal fade" id="modal-web-delete">
