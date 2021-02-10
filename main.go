@@ -346,7 +346,9 @@ func PostAdmin(c *gin.Context) {
 			}
 		}
 		c.JSON(http.StatusOK, ret)
- 	case "class":
+ 	case "class-add":
+	case "class-edit":
+	case "class-delete":
 	default:
 		c.JSON(http.StatusFound, gin.H{
 			"message": "Error 302",
