@@ -262,7 +262,7 @@ func PostAdmin(c *gin.Context) {
 			classid := GetClassId(jsonMap["class1_name"], jsonMap["class2_name"])
 			fmt.Println(classid, WebStack.Class[classid])
 			if IsJsonKey(jsonMap,"name") && IsJsonKey(jsonMap,"url") && IsJsonKey(jsonMap,"mark") && IsJsonKey(jsonMap,"img") {
-				if AddClassData(classid, jsonMap) {
+				if AddWebData(classid, jsonMap) {
 					if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
 						ret["message"] = "添加网址成功"
 						ret["error"] = 0
@@ -288,7 +288,7 @@ func PostAdmin(c *gin.Context) {
 			classid := GetClassId(jsonMap["class1_name"], jsonMap["class2_name"])
 			//fmt.Println(classid, WebStack.Class[classid])
 			if IsJsonKey(jsonMap,"name") && IsJsonKey(jsonMap,"url") && IsJsonKey(jsonMap,"mark") && IsJsonKey(jsonMap,"img") {
-				if EditClassData(classid, jsonMap) {
+				if EditWebData(classid, jsonMap) {
 					if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
 						ret["message"] = "编辑网址成功"
 						ret["error"] = 0
@@ -347,6 +347,13 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
  	case "class-add":
+		if IsJsonKey(jsonMap, "name") && IsJsonKey(jsonMap,"icon") && IsJsonKey(jsonMap,"class_up") {
+
+		} else {
+			ret["message"] = "上报数据不完整"
+			ret["error"] = 160
+		}
+		c.JSON(http.StatusOK, ret)
 	case "class-edit":
 	case "class-delete":
 	default:
@@ -577,7 +584,7 @@ func GetClassId(name1 string, name2 string) int {
 	return -1
 }
 
-func AddClassData(classid int, classData map[string]string) bool {
+func AddWebData(classid int, classData map[string]string) bool {
 	if classid < 0 || classid > len(WebStack.Class) {
 		return false
 	}
@@ -599,7 +606,7 @@ func DeleteWebData(classid int, webid int) bool {
 	}
 }
 
-func EditClassData(classid int, classData map[string]string) bool {
+func EditWebData(classid int, classData map[string]string) bool {
 	oldClassId, oldWebId := WebIndex2ID(classData["index"])
 	if oldClassId >= 0 && oldWebId >= 0 {
 		if oldClassId == classid {
@@ -608,7 +615,7 @@ func EditClassData(classid int, classData map[string]string) bool {
 			WebStack.Class[classid].Rows[oldWebId].Img = classData["img"]
 			WebStack.Class[classid].Rows[oldWebId].Mark = classData["mark"]
 			return true
-		} else if AddClassData(classid, classData) {
+		} else if AddWebData(classid, classData) {
 			return DeleteWebData(oldClassId, oldWebId)
 		}
 	}
