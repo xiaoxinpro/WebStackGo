@@ -620,6 +620,7 @@
                                     <div class="col-md-6" style="margin-bottom: 15px;">
                                         <label for="web-name" class="control-label">分类名称</label>
                                         <input type="text" class="form-control" id="class-name" placeholder="网站名称">
+                                        <input type="hidden"id="class-id" value="-1">
                                     </div>
                                     <div class="col-md-6" style="margin-bottom: 15px;">
                                         <label class="control-label">分类图标</label>
@@ -716,6 +717,7 @@
                     name: modal.find('.modal-body #class-name').val(),
                     icon: modal.find('.modal-body #select-class-icon option:selected').val(),
                     class_up: modal.find('.modal-body #select-up-class option:selected').val(),
+                    class_id: modal.find('.modal-body #class-id').val(),
                 }
                 console.log(addData);
                 // submit("?cmd=class-add", addData, function (res) {
@@ -728,6 +730,7 @@
                     name: modal.find('.modal-body #class-name').val(),
                     icon: modal.find('.modal-body #select-class-icon option:selected').val(),
                     class_up: modal.find('.modal-body #select-up-class option:selected').val(),
+                    class_id: modal.find('.modal-body #class-id').val(),
                 }
                 console.log(editData);
                 // submit("?cmd=class-edit", editData, function (res) {
@@ -1153,6 +1156,7 @@
                 modal.find(".modal-body #class-name").val("");
                 modal.find(".modal-body #select-class-icon").val("");
                 modal.find(".modal-body #select-up-class").val("-1");
+                modal.find(".modal-body #class-id").val(index);
             }
             if (type == 'edit') {
                 let classIndex = 0;
@@ -1169,6 +1173,7 @@
                     menuClass = WebStack['Menu'][classIndex];
                     modal.find("#select-up-class").val("-1");
                 }
+                modal.find(".modal-body #class-id").val(classIndex);
                 modal.find('.modal-title').text("编辑分类【"+menuClass['name']+"】");
                 modal.find(".modal-body #class-name").val(menuClass['name']);
                 modal.find(".modal-body #select-class-icon").val(menuClass['icon']);
