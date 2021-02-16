@@ -347,8 +347,20 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
  	case "class-add":
-		if IsJsonKey(jsonMap, "name") && IsJsonKey(jsonMap,"icon") && IsJsonKey(jsonMap,"class_up") {
-
+		if IsJsonKey(jsonMap, "name") && IsJsonKey(jsonMap,"icon") && IsJsonKey(jsonMap,"class_up") && IsJsonKey(jsonMap,"class_id") {
+			classup, _ := strconv.Atoi(jsonMap["class_up"])
+			if AddClassData(classup, jsonMap["name"], jsonMap["icon"]) {
+				if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
+					ret["message"] = "添加分类成功"
+					ret["error"] = 0
+				} else {
+					ret["message"] = err.Error()
+					ret["error"] = 163
+				}
+			} else {
+				ret["message"] = "上报数据参数错误"
+				ret["error"] = 161
+			}
 		} else {
 			ret["message"] = "上报数据不完整"
 			ret["error"] = 160
@@ -620,6 +632,31 @@ func EditWebData(classid int, classData map[string]string) bool {
 		}
 	}
 	return false
+}
+
+func AddClassData(classup int, classname string, classicon string) bool {
+	if classup == -1 {
+		WebStack.Menu = append(WebStack.Menu, JsMenu{
+			Menu: "smooth",
+			Name: classname,
+			Icon: classicon,
+			Sub:  []JsMenu{},
+			Url:  "#" + classname,
+		})
+		return true
+	} else if classup >=0 && classup < len(WebStack.Menu) {
+		WebStack.Menu[classup].Sub = append(WebStack.Menu[classup].Sub, JsMenu{
+			Menu: "smooth",
+			Name: classname,
+			Icon: classicon,
+			Sub:  []JsMenu{},
+			Url:  "#" + classname,
+		})
+		return true
+	} else {
+		return false
+	}
+
 }
 
 //Contain 判断obj是否在target中，target支持的类型array,slice,map   false:不在 true:在
