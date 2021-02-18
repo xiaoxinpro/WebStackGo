@@ -349,7 +349,10 @@ func PostAdmin(c *gin.Context) {
  	case "class-add":
 		if IsJsonKey(jsonMap, "name") && IsJsonKey(jsonMap,"icon") && IsJsonKey(jsonMap,"class_up") && IsJsonKey(jsonMap,"class_id") {
 			classup, _ := strconv.Atoi(jsonMap["class_up"])
-			if AddClassData(classup, jsonMap["name"], jsonMap["icon"]) {
+			if CheckClassName(jsonMap["name"]) == false {
+				ret["message"] = "分类名称冲突，请更改分类名称。"
+				ret["error"] = 162
+			} else if AddClassData(classup, jsonMap["name"], jsonMap["icon"]) {
 				if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
 					ret["message"] = "添加分类成功"
 					ret["error"] = 0
@@ -566,6 +569,33 @@ func WebIndex2ID(index string) (int,int) {
 		}
 	}
 	return classId, webId
+}
+
+func CheckClassName(name string) bool {
+	if len(strings.TrimSpace(name)) == 0 {
+		return false
+	}
+	for _, menu := range WebStack.Menu {
+		if menu.Name == name {
+			return false
+		} else {
+			for _, subMenu := range menu.Sub {
+				if subMenu.Name == name {
+					return false
+				}
+			}
+		}
+	}
+	return true
+}
+
+func GetClassIndex(name string) int {
+	for index, item := range WebStack.Class {
+		if item.Name == name {
+			return index
+		}
+	}
+	return -1
 }
 
 func GetClassId(name1 string, name2 string) int {
