@@ -204,7 +204,7 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-2">
-                        <button type="button" class="btn btn-info btn-lg btn-block" data-toggle="modal" data-target="#modal-class-edit" data-backdrop="static" data-class="add" data-index="-">添加</button>
+                        <button type="button" class="btn btn-info btn-lg btn-block" data-toggle="modal" data-target="#modal-class-edit" data-backdrop="static" data-class="add" data-index="-1">添加</button>
                     </div>
                     <div class="col-sm-3 col-sm-offset-7 col-md-2 col-md-offset-8">
                         <button type="button" class="btn btn-success btn-lg btn-block" id="class-save-sort" style="display: none;">保存排序</button>
@@ -721,7 +721,7 @@
                 }
                 console.log(addData);
                 submit("?cmd=class-add", addData, function (res) {
-                    console.log(res);
+                    //console.log(res);
                     callback(res);
                 });
             }
@@ -957,13 +957,13 @@
                 let modal = $("#modal-web-edit");
                 let title = modal.find('.modal-title').text();
                 if (title.indexOf("添加") >= 0) {
-                    console.log(title, true);
+                    //console.log(title, true);
                     webstackAddSubmit(modal, function (res) {
                         $btn.button('reset');
                         webstackSaveSubmitCallback(res);
                     });
                 } else {
-                    console.log(title, false);
+                    //console.log(title, false);
                     webstackEditSubmit(modal, function (res) {
                         $btn.button('reset');
                         webstackSaveSubmitCallback(res);
@@ -992,7 +992,7 @@
                     class1_name: modal.find('.modal-body #select-class-1 option:selected').text(),
                     class2_name: modal.find('.modal-body #select-class-2 option:selected').text(),
                 }
-                console.log(addData);
+                //console.log(addData);
                 submit("?cmd=web-add", addData, function (res) {
                     callback(res);
                 });
@@ -1010,7 +1010,7 @@
                     class1_name: modal.find('.modal-body #select-class-1 option:selected').text(),
                     class2_name: modal.find('.modal-body #select-class-2 option:selected').text(),
                 }
-                console.log(editData);
+                //console.log(editData);
                 submit("?cmd=web-edit", editData, function (res) {
                     callback(res);
                 });
@@ -1156,7 +1156,7 @@
                 modal.find('.modal-title').text("添加分类");
                 modal.find(".modal-body #class-name").val("");
                 modal.find(".modal-body #select-class-icon").val("");
-                modal.find(".modal-body #select-up-class").val("-1");
+                modal.find(".modal-body #select-up-class").val(index);
                 modal.find(".modal-body #class-id").val(index);
             }
             if (type == 'edit') {
@@ -1243,7 +1243,7 @@
                 modal.find('.modal-body #web-image').css('background-image', 'none');
                 modal.find('.modal-body #web-image').text("选择图片");
             }
-            console.log("modal-web-edit", index);
+            //console.log("modal-web-edit", index);
         })
 
         let nestedSortables = [].slice.call(document.querySelectorAll('.nested-sortable'));
