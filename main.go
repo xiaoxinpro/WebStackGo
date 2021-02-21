@@ -349,7 +349,7 @@ func PostAdmin(c *gin.Context) {
  	case "class-add":
 		if IsJsonKey(jsonMap, "name") && IsJsonKey(jsonMap,"icon") && IsJsonKey(jsonMap,"class_up") && IsJsonKey(jsonMap,"class_id") {
 			classup, _ := strconv.Atoi(jsonMap["class_up"])
-			if CheckClassName(jsonMap["name"]) == false {
+			if CheckClassName(jsonMap["name"], "") == false {
 				ret["message"] = "分类名称冲突，请更改分类名称。"
 				ret["error"] = 162
 			} else if AddClassData(classup, jsonMap["name"], jsonMap["icon"]) {
@@ -370,6 +370,28 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
 	case "class-edit":
+		if IsJsonKey(jsonMap, "name") && IsJsonKey(jsonMap,"icon") && IsJsonKey(jsonMap,"class_up") && IsJsonKey(jsonMap,"class_id") {
+			classup, _ := strconv.Atoi(jsonMap["class_up"])
+			if CheckClassName(jsonMap["name"], jsonMap["class_id"]) == false {
+				ret["message"] = "分类名称冲突，请更改分类名称。"
+				ret["error"] = 172
+			} else if EditClassData(jsonMap["class_id"], classup, jsonMap["name"], jsonMap["icon"]) {
+				if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
+					ret["message"] = "编辑分类成功"
+					ret["error"] = 0
+				} else {
+					ret["message"] = err.Error()
+					ret["error"] = 173
+				}
+			} else {
+				ret["message"] = "上报数据参数错误"
+				ret["error"] = 171
+			}
+		} else {
+			ret["message"] = "上报数据不完整"
+			ret["error"] = 170
+		}
+		c.JSON(http.StatusOK, ret)
 	case "class-delete":
 	default:
 		c.JSON(http.StatusFound, gin.H{
@@ -571,16 +593,39 @@ func WebIndex2ID(index string) (int,int) {
 	return classId, webId
 }
 
-func CheckClassName(name string) bool {
+func ClassIndex2ID(index string) (int,int) {
+	arrIndex := strings.Split(index, "-")
+	classUp := -1
+	classId := -1
+	if len(arrIndex) == 2 {
+		classUp, _ = strconv.Atoi(arrIndex[0])
+		classId, _ = strconv.Atoi(arrIndex[1])
+	} else if len(arrIndex) == 1 {
+		classId, _ = strconv.Atoi(arrIndex[0])
+	}
+	return classUp, classId
+}
+
+func CheckClassName(name string, index string) bool {
 	if len(strings.TrimSpace(name)) == 0 {
 		return false
 	}
-	for _, menu := range WebStack.Menu {
+	classup,classid := -1,-1
+	if index != "" {
+		classup,classid = ClassIndex2ID(index)
+	}
+	for id, menu := range WebStack.Menu {
 		if menu.Name == name {
+			if(-1 == classup && id == classid) {
+				continue
+			}
 			return false
 		} else {
-			for _, subMenu := range menu.Sub {
+			for subId, subMenu := range menu.Sub {
 				if subMenu.Name == name {
+					if(id == classup && subId == classid) {
+						continue
+					}
 					return false
 				}
 			}
@@ -687,6 +732,28 @@ func AddClassData(classup int, classname string, classicon string) bool {
 		return false
 	}
 
+}
+
+func EditClassData(class_index string, classup int, classname string, classicon string) bool {
+	oldClassUp, oldClassId := ClassIndex2ID(class_index)
+	if oldClassUp == classup {
+		if oldClassUp == -1 {
+			WebStack.Menu[oldClassId].Name = classname
+			WebStack.Menu[oldClassId].Icon = classicon
+		} else if oldClassUp >= 0 && oldClassUp < len(WebStack.Menu) {
+			WebStack.Menu[oldClassUp].Sub[oldClassId].Name = classname
+			WebStack.Menu[oldClassUp].Sub[oldClassId].Icon = classicon
+		} else {
+			return false
+		}
+	} else{
+		if AddClassData(classup, classname, classicon) {
+			//return DeleteClassData(class_index)
+		} else {
+			return false
+		}
+	}
+	return true
 }
 
 //Contain 判断obj是否在target中，target支持的类型array,slice,map   false:不在 true:在
