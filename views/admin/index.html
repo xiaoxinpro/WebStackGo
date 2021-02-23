@@ -734,9 +734,9 @@
                     class_id: modal.find('.modal-body #class-id').val(),
                 }
                 console.log(editData);
-                // submit("?cmd=class-edit", editData, function (res) {
-                //     callback(res);
-                // });
+                submit("?cmd=class-edit", editData, function (res) {
+                    callback(res);
+                });
             }
         </script>
     </div>
