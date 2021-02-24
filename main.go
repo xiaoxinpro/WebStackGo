@@ -734,8 +734,20 @@ func AddClassData(classup int, classname string, classicon string) bool {
 
 }
 
-func EditClassData(class_index string, classup int, classname string, classicon string) bool {
-	oldClassUp, oldClassId := ClassIndex2ID(class_index)
+func DeleteClassData(classIndex string) bool {
+	oldClassUp, oldClassId := ClassIndex2ID(classIndex)
+	if oldClassUp == -1 {
+		WebStack.Menu = append(WebStack.Menu[:oldClassId], WebStack.Menu[oldClassId+1:]...)
+	} else if oldClassUp >= 0 && oldClassUp < len(WebStack.Menu) {
+		WebStack.Menu[oldClassUp].Sub = append(WebStack.Menu[oldClassUp].Sub[:oldClassId], WebStack.Menu[oldClassUp].Sub[oldClassId+1:]...)
+	} else {
+		return false
+	}
+	return true
+}
+
+func EditClassData(classIndex string, classup int, classname string, classicon string) bool {
+	oldClassUp, oldClassId := ClassIndex2ID(classIndex)
 	if oldClassUp == classup {
 		if oldClassUp == -1 {
 			WebStack.Menu[oldClassId].Name = classname
@@ -748,7 +760,7 @@ func EditClassData(class_index string, classup int, classname string, classicon 
 		}
 	} else{
 		if AddClassData(classup, classname, classicon) {
-			//return DeleteClassData(class_index)
+			return DeleteClassData(classIndex)
 		} else {
 			return false
 		}
