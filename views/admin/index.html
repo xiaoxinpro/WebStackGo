@@ -595,14 +595,42 @@
                 </div>
                 <div class="modal-body">
                     <div class="" id="delete-message" style="width: 100%"></div>
+                    <input type="hidden" id="class-delete-index" value="">
                 </div>
                 <div class="modal-footer">
                     <div class="pull-left text-danger">注意：删除后将无法恢复，建议备份后删除！</div>
                     <button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-danger">删除</button>
+                    <button type="button" class="btn btn-danger" id="classDeleteSubmit" data-loading-text="删除中...">删除</button>
                 </div>
             </div>
         </div>
+        <script type="text/javascript">
+            function classDeleteSubmit(index, callback = null) {
+                let deleteData = {};
+                deleteData['index'] = index;
+                submit("?cmd=class-delete", deleteData, function (res) {
+                    if (callback) {
+                        callback(res);
+                    }
+                });
+            }
+
+            $("#classDeleteSubmit").on('click', function () {
+                let $btn = $(this).button('loading');
+                let modal = $("#modal-class-delete");
+                classDeleteSubmit(modal.find('.modal-body #class-delete-index').val(), function (res) {
+                    $btn.button('reset');
+                    console.log(res);
+                    if (res['error'] === 0) {
+                        message('成功', res['message'], function () {
+                            reload();
+                        });
+                    } else {
+                        message('错误', res['message']);
+                    }
+                });
+            });
+        </script>
     </div>
     <!-- 编辑分类Modal -->
     <div class="modal fade" id="modal-class-edit">
@@ -1143,6 +1171,7 @@
                     menuClass = WebStack['Menu'][classIndex];
                 }
                 modal.find('.modal-title').text("删除分类【"+menuClass['name']+"】");
+                modal.find('.modal-body #class-delete-index').val(index);
                 modal.find('.modal-body #delete-message').text("请谨慎决定是否要删除 【"+menuClass['name']+"】 分类及其该分类下的全部网站吗？");
             }
         });
