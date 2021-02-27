@@ -393,6 +393,25 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
 	case "class-delete":
+		isClassDeleteOk := false
+		if IsJsonKey(jsonMap, "index") {
+			if DeleteClassData(jsonMap["index"]) {
+				isClassDeleteOk = true;
+			} else {
+				ret["message"] = "无效的网址源信息"
+				ret["error"] = 181
+			}
+		}
+		if isClassDeleteOk == true {
+			if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
+				ret["message"] = "删除网址成功"
+				ret["error"] = 0
+			} else {
+				ret["message"] = err.Error()
+				ret["error"] = 182
+			}
+		}
+		c.JSON(http.StatusOK, ret)
 	default:
 		c.JSON(http.StatusFound, gin.H{
 			"message": "Error 302",
