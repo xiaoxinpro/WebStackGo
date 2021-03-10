@@ -412,6 +412,14 @@ func PostAdmin(c *gin.Context) {
 			}
 		}
 		c.JSON(http.StatusOK, ret)
+	case "class-sort":
+		if IsJsonKey(jsonMap, "sort") {
+
+		} else {
+			ret["message"] = "上报数据不完整"
+			ret["error"] = 190
+		}
+		c.JSON(http.StatusOK, ret)
 	default:
 		c.JSON(http.StatusFound, gin.H{
 			"message": "Error 302",
