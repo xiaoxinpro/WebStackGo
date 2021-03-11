@@ -207,13 +207,13 @@
                         <button type="button" class="btn btn-info btn-lg btn-block" data-toggle="modal" data-target="#modal-class-edit" data-backdrop="static" data-class="add" data-index="-1">添加</button>
                     </div>
                     <div class="col-sm-3 col-sm-offset-7 col-md-2 col-md-offset-8">
-                        <button type="button" class="btn btn-success btn-lg btn-block" id="class-save-sort" style="display: none;">保存排序</button>
+                        <button type="button" class="btn btn-success btn-lg btn-block" id="class-save-sort" data-loading-text="保存中..."style="display: none;">保存排序</button>
                     </div>
                 </div>
                 <ul class="list-group nested-sortable" id="menu-table">
                     {{range $index,$menu := .webstack.Menu}}
                         {{if eq $menu.Menu "smooth"}}
-                            <li class="list-group-item list-class-title list-class-has-sub">
+                            <li class="list-group-item list-class-title list-class-has-sub" data-id="{{$menu.Name}}">
                                 <div class="">
                                     <i class="{{$menu.Icon}}"></i>
                                     <span class="title">{{$menu.Name}}</span>
@@ -224,9 +224,9 @@
                                     </div>
                                 </div>
                                 {{if $menu.Sub}}
-                                <ul class="list-group nested-sortable">
+                                <ul class="list-group nested-sortable" data-id="{{$menu.Name}}">
                                     {{range $indexSub,$menuSub := $menu.Sub}}
-                                        <li class="list-group-item list-class-item">
+                                        <li class="list-group-item list-class-item" data-id="{{$menuSub.Name}}">
                                             <span class="title">{{$menuSub.Name}}</span>
                                             <div class="pull-right">
                                                 <a href="#" class="edit" data-toggle="modal" data-target="#modal-class-edit" data-backdrop="static" data-class="edit" data-index="{{$index}}-{{$indexSub}}"><i class="linecons-pencil"></i>编辑</a>&nbsp;
@@ -251,6 +251,20 @@
                         {{end}}
                     {{end}}
                 </ul>
+                <script type="text/javascript">
+                    var SortClassData = [];
+                    $("#class-save-sort").on('click', function () {
+                        let $btn = $(this).button('loading');
+                        let table = $("#menu-table");
+                        let sortData = SortClassData[0].toArray();
+                        for(let i=1; i < SortClassData.length; i++) {
+                            let id = sortData.indexOf(SortClassData[i].el.dataset.id);
+                            sortData[id] = SortClassData[i].toArray();
+                        }
+                        console.log(sortData);
+                        $btn.button('reset');
+                    });
+                </script>
             </div>
             <div class="page" id="web-config" style="display: none;">
                 <div class="page-title">
@@ -1277,7 +1291,7 @@
 
         let nestedSortables = [].slice.call(document.querySelectorAll('.nested-sortable'));
         for (let i = 0; i < nestedSortables.length; i++) {
-            new Sortable(nestedSortables[i], {
+            SortClassData[i] = new Sortable(nestedSortables[i], {
                 group: 'nested-'+i,
                 animation: 150,
                 delay: 300,
