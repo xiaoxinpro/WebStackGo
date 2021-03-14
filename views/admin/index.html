@@ -257,12 +257,31 @@
                         let $btn = $(this).button('loading');
                         let table = $("#menu-table");
                         let sortData = SortClassData[0].toArray();
+                        // let tmp = 1;
                         for(let i=1; i < SortClassData.length; i++) {
                             let id = sortData.indexOf(SortClassData[i].el.dataset.id);
                             sortData[id] = SortClassData[i].toArray();
+                            // let item = SortClassData[i].toArray();
+                            // for(let j=0; j<item.length; j++) {
+                            //     sortData.splice(i+j+tmp,0,item[j]);
+                            // }
+                            // tmp = tmp + item.length + 1;
                         }
                         console.log(sortData);
-                        $btn.button('reset');
+                        let class_data = {
+                            sort: JSON.stringify(sortData),
+                        }
+                        submit("?cmd=class-sort", class_data, function (res) {
+                            console.log(res);
+                            $btn.button('reset');
+                            if (res['error'] === 0) {
+                                message('成功', res['message'], function () {
+                                    reload();
+                                });
+                            } else {
+                                message('错误', res['message']);
+                            }
+                        });
                     });
                 </script>
             </div>
