@@ -257,17 +257,14 @@
                         let $btn = $(this).button('loading');
                         let table = $("#menu-table");
                         let sortData = SortClassData[0].toArray();
-                        // let tmp = 1;
                         for(let i=1; i < SortClassData.length; i++) {
                             let id = sortData.indexOf(SortClassData[i].el.dataset.id);
-                            sortData[id] = SortClassData[i].toArray();
-                            // let item = SortClassData[i].toArray();
-                            // for(let j=0; j<item.length; j++) {
-                            //     sortData.splice(i+j+tmp,0,item[j]);
-                            // }
-                            // tmp = tmp + item.length + 1;
+                            let name = sortData[id]
+                            sortData[id] = {}
+                            sortData[id][name] = SortClassData[i].toArray();
                         }
                         console.log(sortData);
+                        return;
                         let class_data = {
                             sort: JSON.stringify(sortData),
                         }
