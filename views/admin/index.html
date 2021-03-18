@@ -253,9 +253,37 @@
                 </ul>
                 <script type="text/javascript">
                     var SortClassData = [];
+                    function findMenuItem(webMenu, name) {
+                        let ret = null;
+                        for (const item in webMenu) {
+                            if (webMenu[item]['name'] == name) {
+                                return webMenu[item];
+                            } else if(webMenu[item]['sub'].length > 0) {
+                                ret = findMenuItem(webMenu[item]['sub'], name);
+                                if (ret != null) {
+                                    return ret;
+                                }
+                            }
+                        }
+                        return null;
+                    }
+
+                    function findClassItem(webClass, name) {
+                        for (const item in webClass) {
+                            if (webClass[item].name == name) {
+                                return webClass[item];
+                            }
+                        }
+                        return null;
+                    }
+
+                    const isString = val => typeof val === 'string';
+
                     $("#class-save-sort").on('click', function () {
                         let $btn = $(this).button('loading');
                         let table = $("#menu-table");
+                        let sortClassData = [];
+                        let sortMenuData = [];
                         let sortData = SortClassData[0].toArray();
                         for(let i=1; i < SortClassData.length; i++) {
                             let id = sortData.indexOf(SortClassData[i].el.dataset.id);
@@ -264,9 +292,48 @@
                             sortData[id][name] = SortClassData[i].toArray();
                         }
                         console.log(sortData);
+                        for (const item in sortData) {
+                            let ret = null;
+                            if (isString(sortData[item])) {
+                                ret = findMenuItem(WebStack["Menu"], sortData[item]);
+                                if(ret != null) {
+                                    sortMenuData.push(ret);
+                                }
+                                ret = findClassItem(WebStack["Class"], sortData[item]);
+                                if(ret != null) {
+                                    sortClassData.push(ret);
+                                }
+                            } else {
+                                for (const itemName in sortData[item]) {
+                                    ret = findMenuItem(WebStack["Menu"], itemName);
+                                    if(ret != null) {
+                                        let sub = [];
+                                        for (const subItem in sortData[item][itemName]) {
+                                            let subRet = findMenuItem(ret['sub'], sortData[item][itemName][subItem]);
+                                            if(subRet != null) {
+                                                sub.push(subRet);
+                                            }
+                                            subRet = findClassItem(WebStack["Class"], sortData[item][itemName][subItem]);
+                                            if(subRet != null) {
+                                                sortClassData.push(subRet);
+                                            }
+                                        }
+                                        ret['sub'] = sub;
+                                        sortMenuData.push(ret);
+                                    }
+                                    ret = findClassItem(WebStack["Class"], itemName);
+                                    if(ret != null) {
+                                        sortClassData.push(ret);
+                                    }
+                                }
+                            }
+                        }
+                        console.log(sortMenuData, sortClassData);
                         return;
                         let class_data = {
                             sort: JSON.stringify(sortData),
+                            webClass: JSON.stringify(sortClassData),
+                            webMenu: JSON.stringify(sortMenuData),
                         }
                         submit("?cmd=class-sort", class_data, function (res) {
                             console.log(res);
