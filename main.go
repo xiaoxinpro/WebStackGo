@@ -596,17 +596,21 @@ func LoadFile(path string) ([]byte, error) {
 	return content, err
 }
 
+func LoadJsonString(content []byte, obj interface{}) error {
+	err := json.Unmarshal(content, obj)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return err
+}
+
 func LoadJsonFile(path string, obj interface{}) error {
 	content, err := LoadFile(path)
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
-	err = json.Unmarshal(content, obj)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return err
+	return LoadJsonString(content, obj)
 }
 
 func WebIndex2ID(index string) (int,int) {
