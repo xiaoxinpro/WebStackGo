@@ -413,8 +413,8 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
 	case "class-sort":
-		if IsJsonKey(jsonMap, "sort") {
-			if SortClassData(jsonMap["sort"]) {
+		if IsJsonKey(jsonMap, "webStack") {
+			if LoadJsonString([]byte(jsonMap["webStack"]) ,&WebStack) == nil {
 				if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
 					ret["message"] = "保存分类排序成功"
 					ret["error"] = 0
@@ -422,9 +422,10 @@ func PostAdmin(c *gin.Context) {
 					ret["message"] = err.Error()
 					ret["error"] = 193
 				}
+			} else {
+				ret["message"] = "上报数据格式错误"
+				ret["error"] = 191
 			}
-			ret["message"] = "保存分类排序"
-			ret["error"] = 0
 		} else {
 			ret["message"] = "上报数据不完整"
 			ret["error"] = 190
@@ -806,24 +807,6 @@ func EditClassData(classIndex string, classup int, classname string, classicon s
 			return false
 		}
 	}
-	return true
-}
-
-func SortClassData(sortJson string) bool {
-	var sortData []interface{}
-	json.Unmarshal([]byte(sortJson), &sortData)
-	for i:=0; i < len(sortData); i++ {
-		if reflect.TypeOf(sortData[i]).Kind() == reflect.String {
-			fmt.Println(reflect.ValueOf(sortData[i]).String())
-		} else if reflect.TypeOf(sortData[i]).Kind() == reflect.Slice {
-			item := reflect.ValueOf(sortData[i])
-			for j:=0; j < item.Len(); j++ {
-				fmt.Println(reflect.ValueOf(item.Index(j).Interface()).String())
-			}
-		}
-
-	}
-	fmt.Println(sortData)
 	return true
 }
 
