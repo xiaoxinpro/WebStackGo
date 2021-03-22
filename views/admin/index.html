@@ -291,7 +291,7 @@
                             sortData[id] = {}
                             sortData[id][name] = SortClassData[i].toArray();
                         }
-                        console.log(sortData);
+                        // console.log(sortData);
                         for (const item in sortData) {
                             let ret = null;
                             if (isString(sortData[item])) {
@@ -328,15 +328,13 @@
                                 }
                             }
                         }
-                        console.log(sortMenuData, sortClassData);
-                        return;
+                        // console.log(sortMenuData, sortClassData);
                         let class_data = {
                             sort: JSON.stringify(sortData),
-                            webClass: JSON.stringify(sortClassData),
-                            webMenu: JSON.stringify(sortMenuData),
+                            webStack: JSON.stringify({"Menu": sortMenuData, "Class": sortClassData}),
                         }
                         submit("?cmd=class-sort", class_data, function (res) {
-                            console.log(res);
+                            // console.log(res);
                             $btn.button('reset');
                             if (res['error'] === 0) {
                                 message('成功', res['message'], function () {
