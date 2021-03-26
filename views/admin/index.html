@@ -657,6 +657,7 @@
 
             <footer class="main-footer fixed footer-type-1">
                 <div class="footer-inner">
+
                     <!-- Add your copyright text here -->
                     <div class="footer-text">
                         &copy; 2017-2020
@@ -682,6 +683,11 @@
                         </a>
                     </div>
                 </div>
+                <script type="text/javascript">
+                    $(document).ready(function() {
+                        $(".footer-text").html({{.config.Footer}});
+                    })
+                </script>
             </footer>
         </div>
     </div>
