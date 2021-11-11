@@ -1,3 +1,6 @@
+#Schr0dingerCat fork后新增功能
+https://github.com/x1ah/gena 参考该项目，增加search功能、热搜功能、夜间模式切换功能
+
 # WebStackGo
 本项目使用 [Webstack网址导航](https://github.com/WebStackPage/WebStackPage.github.io) 作为前端框架，基于Go和Gin框架实现后端功能，努力做到轻量级与无依赖的网址导航网站。
 
