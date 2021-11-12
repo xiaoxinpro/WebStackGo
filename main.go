@@ -130,7 +130,7 @@ func GetAdmin(c *gin.Context)  {
 	cmd := c.DefaultQuery("cmd", "null")
 	switch cmd {
 	case "logout":
-		c.SetCookie("webstackgo_token", "", -1, "/", "localhost", false, true)
+		c.SetCookie("webstackgo_token", "", -1, "/", strings.Split(c.Request.Host, ":")[0], false, true)
 		c.JSON(http.StatusOK, gin.H{
 			"cmd": cmd,
 			"message": "退出登陆成功",
@@ -514,7 +514,7 @@ func PostLogin(c *gin.Context)  {
 		now := time.Now()
 		token := GetToken(username, password, now.Unix())
 		fmt.Println(token, now)
-		c.SetCookie("webstackgo_token", token, 7200, "/", "localhost", false, true)
+		c.SetCookie("webstackgo_token", token, 7200, "/", strings.Split(c.Request.Host, ":")[0], false, true)
 		c.HTML(http.StatusOK, "admin/login.html", gin.H{
 			"config": Config,
 			"success": true,
@@ -540,7 +540,7 @@ func AuthMiddleWare() gin.HandlerFunc {
 				if intNow, err2 := strconv.ParseInt(arr[1], 10, 64); err2==nil && token==GetToken(Login.Username, Login.Password, intNow) {
 					if time.Now().Unix() - intNow < 3600 {
 						token = GetToken(Login.Username, Login.Password, time.Now().Unix())
-						c.SetCookie("webstackgo_token", token, 7200, "/", "localhost", false, true)
+						c.SetCookie("webstackgo_token", token, 7200, "/", strings.Split(c.Request.Host, ":")[0], false, true)
 					}
 					c.Next()
 					return

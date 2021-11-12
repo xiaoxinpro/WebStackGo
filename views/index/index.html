@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="/assets/css/xenon-components.css">
     <link rel="stylesheet" href="/assets/css/xenon-skins.css">
     <link rel="stylesheet" href="/assets/css/nav.css">
+    <link rel="stylesheet" href="/assets/css/search.css">
     <script src="/assets/js/jquery-1.11.1.min.js"></script>
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -35,7 +36,240 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="WebStack - 收集国内外优秀设计网站、UI设计资源网站、灵感创意网站、素材资源网站，定时更新分享优质产品设计书签。www.webstack.cc">
     <meta name="twitter:description" content="UI设计,UI设计素材,设计导航,网址导航,设计资源,创意导航,创意网站导航,设计师网址大全,设计素材大全,设计师导航,UI设计资源,优秀UI设计欣赏,设计师导航,设计师网址大全,设计师网址导航,产品经理网址导航,交互设计师网址导航,www.webstack.cc">
-    <meta name="twitter:image" content="http://www.webstack.cc/assets/images/webstack_banner_cn.png">
+    <meta name="twitter:image" content="http://webstack.cc/assets/images/webstack_banner_cn.png">
+    <script type="text/javascript">
+        function search() {
+            $(".search-icon").css("opacity", "1");
+            var listIndex = -1;
+            var hotList = 0;
+            var searchData = {
+                "thisSearch": "https://www.google.com/search?q=",
+                "thisSearchIcon": "/assets/images/search_icon.png",
+                "hotStatus": true,
+                "data": [{
+                    "name": "谷歌",
+                    "img": "url('/assets/images/search_icon.png')  -105px 0px",
+                    "position": "-40px 0px",
+                    "url": "https://www.google.com/search?q="
+                },
+                {
+                    "name": "GitHub",
+                    "img": "url('/assets/images/search_icon.png') -80px -175px",
+                    "position": "0px -280px",
+                    "url": "https://github.com/search?utf8=✓\u0026q="
+                },
+                {
+                    "name": "百度",
+                    "img": "url('/assets/images/search_icon.png') -80px 0px",
+                    "position": "0px 0px",
+                    "url": "https://www.baidu.com/s?wd="
+                },
+                {
+                    "name": "知乎",
+                    "img": "url('/assets/images/search_icon.png') -105px -100px",
+                    "position": "-40px -160px",
+                    "url": "https://www.zhihu.com/search?type=content\u0026q="
+                },
+                {
+                    "name": "微博",
+                    "img": "url('/assets/images/search_icon.png') -80px -125px",
+                    "position": "0px -200px",
+                    "url": "https://s.weibo.com/weibo/"
+                },
+                {
+                    "name": "B站",
+                    "img": "url('/assets/images/search_icon.png') -105px -125px",
+                    "position": "-40px -200px",
+                    "url": "http://search.bilibili.com/all?keyword="
+                },
+                {
+                    "name": "豆瓣",
+                    "img": "url('/assets/images/search_icon.png') -80px -150px",
+                    "position": "0px -240px",
+                    "url": "https://www.douban.com/search?source=suggest\u0026q="
+                },
+                {
+                    "name": "搜狗",
+                    "img": "url('/assets/images/search_icon.png') -80px -50px",
+                    "position": "0px -80px",
+                    "url": "https://www.sogou.com/web?query="
+                },
+                {
+                    "name": "必应",
+                    "img": "url('/assets/images/search_icon.png')  -80px -25px",
+                    "position": "0px -40px",
+                    "url": "https://cn.bing.com/search?q="
+                }]
+            };
+            var localSearchData = localStorage.getItem("searchData");
+            if (localSearchData) {
+                searchData = JSON.parse(localSearchData)
+            }
+            function filterChildren(element) {
+                var thisText = $(element).contents().filter(function(index, content) {
+                    return content.nodeType === 3
+                }).text().trim();
+                return thisText
+            }
+            function getHotkeyword(value) {
+                $.ajax({
+                    type: "GET",
+                    url: "https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su",
+                    async: true,
+                    data: {
+                        wd: value
+                    },
+                    dataType: "jsonp",
+                    jsonp: "cb",
+                    success: function(res) {
+                        $("#box ul").text("");
+                        hotList = res.s.length;
+                        if (hotList) {
+                            $("#box").css("display", "block");
+                            for (var i = 0; i < hotList; i++) {
+                                $("#box ul").append("<li><span>" + (i + 1) + "</span> " + res.s[i] + "</li>");
+                                $("#box ul li").eq(i).click(function() {
+                                    var thisText = filterChildren(this);
+                                    $("#txt").val(thisText);
+                                    window.open(searchData.thisSearch + thisText);
+                                    $("#box").css("display", "none")
+                                });
+                                if (i === 0) {
+                                    $("#box ul li").eq(i).css({
+                                        "border-top": "none"
+                                    });
+                                    $("#box ul span").eq(i).css({
+                                        "color": "#fff",
+                                        "background": "#f54545"
+                                    })
+                                } else {
+                                    if (i === 1) {
+                                        $("#box ul span").eq(i).css({
+                                            "color": "#fff",
+                                            "background": "#ff8547"
+                                        })
+                                    } else {
+                                        if (i === 2) {
+                                            $("#box ul span").eq(i).css({
+                                                "color": "#fff",
+                                                "background": "#ffac38"
+                                            })
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            $("#box").css("display", "none")
+                        }
+                    },
+                    error: function(res) {
+                        console.log(res)
+                    }
+                })
+            }
+            $("#txt").keyup(function(e) {
+                if ($(this).val()) {
+                    if (e.keyCode == 38 || e.keyCode == 40 || !searchData.hotStatus) {
+                        return
+                    }
+                    getHotkeyword($(this).val())
+                } else {
+                    $(".search-clear").css("display", "none");
+                    $("#box").css("display", "none")
+                }
+            });
+            $("#txt").keydown(function(e) {
+                if (e.keyCode === 40) {
+                    listIndex === (hotList - 1) ? listIndex = 0 : listIndex++;
+                    $("#box ul li").eq(listIndex).addClass("current").siblings().removeClass("current");
+                    var hotValue = filterChildren($("#box ul li").eq(listIndex));
+                    $("#txt").val(hotValue)
+                }
+                if (e.keyCode === 38) {
+                    if (e.preventDefault) {
+                        e.preventDefault()
+                    }
+                    if (e.returnValue) {
+                        e.returnValue = false
+                    }
+                    listIndex === 0 || listIndex === -1 ? listIndex = (hotList - 1) : listIndex--;
+                    $("#box ul li").eq(listIndex).addClass("current").siblings().removeClass("current");
+                    var hotValue = filterChildren($("#box ul li").eq(listIndex));
+                    $("#txt").val(hotValue)
+                }
+                if (e.keyCode === 13) {
+                    window.open(searchData.thisSearch + $("#txt").val());
+                    $("#box").css("display", "none");
+                    $("#txt").blur();
+                    $("#box ul li").removeClass("current");
+                    listIndex = -1
+                }
+            });
+            $("#txt").focus(function() {
+                $(".search-box").css("box-show", "inset 0 1px 2px rgba(27,31,35,.075), 0 0 0 0.2em rgba(3,102,214,.3)");
+                if ($(this).val() && searchData.hotStatus) {
+                    getHotkeyword($(this).val())
+                }
+            });
+            $("#txt").blur(function() {
+                setTimeout(function() {
+                    $("#box").css("display", "none")
+                },
+                250)
+            });
+            for (var i = 0; i < searchData.data.length; i++) {
+                $(".search-engine-list").append('<li><span style="background:' + searchData.data[i].img + '"/></span>' + searchData.data[i].name + "</li>")
+            }
+            $(".search-icon, .search-engine").hover(function() {
+                $(".search-engine").css("display", "block")
+            },
+            function() {
+                $(".search-engine").css("display", "none")
+            });
+            $("#hot-btn").click(function() {
+                $(this).toggleClass("off");
+                searchData.hotStatus = !searchData.hotStatus;
+                localStorage.searchData = JSON.stringify(searchData)
+            });
+            searchData.hotStatus ? $("#hot-btn").removeClass("off") : $("#hot-btn").addClass("off");
+            $(".search-engine-list li").click(function() {
+                var index = $(this).index();
+                searchData.thisSearchIcon = searchData.data[index].position;
+                $(".search-icon").css("background-position", searchData.thisSearchIcon);
+                searchData.thisSearch = searchData.data[index].url;
+                $(".search-engine").css("display", "none");
+                localStorage.searchData = JSON.stringify(searchData)
+            });
+            $(".search-icon").css("background-position", searchData.thisSearchIcon);
+            $("#search-btn").click(function() {
+                var textValue = $("#txt").val();
+                if (textValue) {
+                    window.open(searchData.thisSearch + textValue);
+                    $("#box ul").html("")
+                } else {
+                    layer.msg("请输入关键词！", {
+                        time: 500
+                    },
+                    function() {
+                        $("#txt").focus()
+                    })
+                }
+            })
+        }
+    </script>
+    <script>
+        //夜间模式切换
+        function switchNightMode() {
+            var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+            if (night == '0') {
+                document.body.classList.add('night');
+                document.cookie = "night=1;path=/"
+            } else {
+                document.body.classList.remove('night');
+                document.cookie = "night=0;path=/"
+            }
+        }
+    </script>
 </head>
 
 <body class="page-body">
@@ -132,6 +366,13 @@
                             </li>
                         </ul>
                     </li> -->
+                    <li class="switch-mode hover-line" onclick="switchNightMode()">
+                        <a href="#">
+                          <svg t="1593061068148" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1681" width="16" height="16">
+                            <path d="M582.4 326.4c-140.8 0-256 115.2-256 256s115.2 256 256 256 256-115.2 256-256-115.2-256-256-256z m0 448c-70.4 0-131.2-36.8-164.8-92.8 12.8 3.2 27.2 4.8 40 4.8 121.6 0 219.2-99.2 219.2-219.2 0-17.6-1.6-35.2-6.4-52.8 60.8 32 102.4 96 102.4 169.6 1.6 104-84.8 190.4-190.4 190.4zM582.4 262.4c17.6 0 32-14.4 32-32v-128c0-17.6-14.4-32-32-32s-32 14.4-32 32v128c0 17.6 14.4 32 32 32zM262.4 582.4c0-17.6-14.4-32-32-32h-128c-17.6 0-32 14.4-32 32s14.4 32 32 32h128c17.6 0 32-14.4 32-32zM310.4 356.8c6.4 6.4 14.4 9.6 22.4 9.6 8 0 16-3.2 22.4-9.6 12.8-12.8 12.8-32 0-44.8l-91.2-91.2c-12.8-12.8-32-12.8-44.8 0-12.8 12.8-12.8 32 0 44.8l91.2 91.2zM944 220.8c-12.8-12.8-32-12.8-44.8 0l-91.2 91.2c-12.8 12.8-12.8 32 0 44.8 6.4 6.4 14.4 9.6 22.4 9.6 8 0 16-3.2 22.4-9.6l91.2-91.2c12.8-12.8 12.8-33.6 0-44.8zM310.4 808l-91.2 91.2c-12.8 12.8-12.8 32 0 44.8 6.4 6.4 14.4 9.6 22.4 9.6 8 0 16-3.2 22.4-9.6l91.2-91.2c12.8-12.8 12.8-32 0-44.8-11.2-11.2-32-11.2-44.8 0z" p-id="1682" fill="#707070"></path>
+                          </svg>
+                        </a>
+                    </li>
                 </ul>
                 <ul class="user-info-menu right-links list-inline list-unstyled">
                     <li class="hidden-sm hidden-xs">
@@ -141,6 +382,29 @@
                     </li>
                 </ul>
             </nav>
+            <section class="sousuo">
+              <div class="search">
+                <div class="search-box">
+                  <span class="search-icon" style="background: url('/assets/images/search_icon.png') -40px 0px; opacity: 1;"></span>
+                  <input type="text" id="txt" class="search-input" autocomplete="off" placeholder="请输入关键字，按回车 / Enter 搜索">
+                  <button class="search-btn" id="search-btn"><i class="fa fa-search"></i></button>
+                </div>
+                <!-- 搜索热词 -->
+                <div class="box search-hot-text" id="box" style="display: none;">
+                  <ul></ul>
+                </div>
+                <!-- 搜索引擎 -->
+                <div class="search-engine" style="display: none;">
+                  <div class="search-engine-head">
+                    <strong class="search-engine-tit">选择您的默认搜索引擎：</strong>
+                    <div class="search-engine-tool">搜索热词： <span id="hot-btn"></span></div>
+                  </div>
+                  <ul class="search-engine-list search-engine-list_zmki_ul">
+                  </ul>
+                </div>
+              </div>
+            </section>
+            <script>search()</script>
             {{range $index, $class := .webstack.Class}}
                 <!-- {{$class.Name}} -->
                 <h4 class="text-gray"><i class="linecons-tag" style="margin-right: 7px;" id="{{$class.Name}}"></i>{{$class.Name}}</h4>
@@ -201,66 +465,86 @@
 
     <!-- 锚点平滑移动 -->
     <script type="text/javascript">
-    $(document).ready(function() {
-        //img lazy loaded
-        const observer = lozad();
-        observer.observe();
+        $(document).ready(function() {
+            //img lazy loaded
+            const observer = lozad();
+            observer.observe();
 
-        $(document).on('click', '.has-sub', function(){
-            var _this = $(this)
-            if(!$(this).hasClass('expanded')) {
-                setTimeout(function(){
-                    _this.find('ul').attr("style","")
-                }, 300);
+            $(document).on('click', '.has-sub', function(){
+                var _this = $(this)
+                if(!$(this).hasClass('expanded')) {
+                    setTimeout(function(){
+                        _this.find('ul').attr("style","")
+                    }, 300);
 
-            } else {
-                $('.has-sub ul').each(function(id,ele){
-                    var _that = $(this)
-                    if(_this.find('ul')[0] != ele) {
-                        setTimeout(function(){
-                            _that.attr("style","")
-                        }, 300);
-                    }
-                })
-            }
-        })
-        $('.user-info-menu .hidden-sm').click(function(){
-            if($('.sidebar-menu').hasClass('collapsed')) {
-                $('.has-sub.expanded > ul').attr("style","")
-            } else {
-                $('.has-sub.expanded > ul').show()
-            }
-        })
-        $("#main-menu li ul li").click(function() {
-            $(this).siblings('li').removeClass('active'); // 删除其他兄弟元素的样式
-            $(this).addClass('active'); // 添加当前元素的样式
-        });
-        $("a.smooth").click(function(ev) {
-            ev.preventDefault();
-
-            public_vars.$mainMenu.add(public_vars.$sidebarProfile).toggleClass('mobile-is-visible');
-            ps_destroy();
-            $("html, body").animate({
-                scrollTop: $(decodeURIComponent($(this).attr("href"))).offset().top - 30
-            }, {
-                duration: 500,
-                easing: "swing"
+                } else {
+                    $('.has-sub ul').each(function(id,ele){
+                        var _that = $(this)
+                        if(_this.find('ul')[0] != ele) {
+                            setTimeout(function(){
+                                _that.attr("style","")
+                            }, 300);
+                        }
+                    })
+                }
+            })
+            $('.user-info-menu .hidden-sm').click(function(){
+                if($('.sidebar-menu').hasClass('collapsed')) {
+                    $('.has-sub.expanded > ul').attr("style","")
+                } else {
+                    $('.has-sub.expanded > ul').show()
+                }
+            })
+            $("#main-menu li ul li").click(function() {
+                $(this).siblings('li').removeClass('active'); // 删除其他兄弟元素的样式
+                $(this).addClass('active'); // 添加当前元素的样式
             });
+            $("a.smooth").click(function(ev) {
+                ev.preventDefault();
+    
+                public_vars.$mainMenu.add(public_vars.$sidebarProfile).toggleClass('mobile-is-visible');
+                ps_destroy();
+                $("html, body").animate({
+                    scrollTop: $(decodeURIComponent($(this).attr("href"))).offset().top - 30
+                }, {
+                    duration: 500,
+                    easing: "swing"
+                });
+            });
+            return false;
         });
-        return false;
-    });
 
-    var href = "";
-    var pos = 0;
-    $("a.smooth").click(function(e) {
-        $("#main-menu li").each(function() {
-            $(this).removeClass("active");
+        var href = "";
+        var pos = 0;
+        $("a.smooth").click(function(e) {
+            $("#main-menu li").each(function() {
+                $(this).removeClass("active");
+            });
+            $(this).parent("li").addClass("active");
+            e.preventDefault();
+            href = decodeURIComponent($(this).attr("href"));
+            pos = $(href).position().top - 30;
         });
-        $(this).parent("li").addClass("active");
-        e.preventDefault();
-        href = decodeURIComponent($(this).attr("href"));
-        pos = $(href).position().top - 30;
-    });
+        (function () {
+          if (document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") === '') {
+            if (new Date().getHours() > 22 || new Date().getHours() < 6) {
+              document.body.classList.add('night');
+              document.cookie = "night=1;path=/";
+              console.log('夜间模式开启');
+            } else {
+              document.body.classList.remove('night');
+              document.cookie = "night=0;path=/";
+              console.log('夜间模式关闭');
+            }
+          } else {
+            var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
+            if (night == '0') {
+              document.body.classList.remove('night');
+            } else if (night == '1') {
+              document.body.classList.add('night');
+            }
+          }
+        })();
     </script>
     <!-- Bottom Scripts -->
     <script src="/assets/js/bootstrap.min.js"></script>
