@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -454,7 +455,7 @@ func PostAdmin(c *gin.Context) {
 	case "class-edit":
 		if IsJsonKey(jsonMap, "name") && IsJsonKey(jsonMap, "icon") && IsJsonKey(jsonMap, "class_up") && IsJsonKey(jsonMap, "class_id") {
 			classup, _ := strconv.Atoi(jsonMap["class_up"])
-			if CheckClassName(jsonMap["name"], jsonMap["class_id"]) == false {
+			if !CheckClassName(jsonMap["name"], jsonMap["class_id"]) {
 				ret["message"] = "分类名称冲突，请更改分类名称。"
 				ret["error"] = 172
 			} else if EditClassData(jsonMap["class_id"], classup, jsonMap["name"], jsonMap["icon"]) {
@@ -511,6 +512,24 @@ func PostAdmin(c *gin.Context) {
 		} else {
 			ret["message"] = "上报数据不完整"
 			ret["error"] = 190
+		}
+		c.JSON(http.StatusOK, ret)
+	case "web-sort-by-class":
+		// 检查[]class中的name是否有不在nemu中的
+
+		// 根据当前WebStack中的Menu及子Menu顺序，排序Class clice 中的元素顺序
+		if WebSortByClass(WebStack) {
+			// 保存webstack
+			if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
+				ret["message"] = "保存网址排序成功"
+				ret["error"] = 0
+			} else {
+				ret["message"] = err.Error()
+				ret["error"] = 195
+			}
+		} else {
+			ret["message"] = "网页依据Menu排序失败"
+			ret["error"] = 194
 		}
 		c.JSON(http.StatusOK, ret)
 	default:
@@ -972,4 +991,65 @@ func Ext(path string) string {
 		}
 	}
 	return ""
+}
+
+// 取得所有menu+子menu的个数
+func GetMenuCount(ws JsWebStack) int {
+	count := 0
+	for _, v := range ws.Menu {
+		if len(v.Sub) > 0 {
+			count += len(v.Sub)
+		} else {
+			count++
+		}
+	}
+	return count
+}
+
+func GetIndexFromMenuSliceByName(name string, ms []string) int {
+	for i, v := range ms {
+		if v == name {
+			return i
+		} else {
+			continue
+		}
+	}
+	return -1
+}
+
+func WebSortByClass(ws JsWebStack) bool {
+	// 取得所有menu+子menu的个数
+	count := GetMenuCount(ws)
+	if count == 0 {
+		return false
+	}
+	// 根据当前menu排序，取得所有分类menu的name排序id
+	var menuNameSlice = make([]string, 0, count)
+	for _, v := range ws.Menu {
+		if len(v.Sub) > 0 {
+			for _, v1 := range v.Sub {
+				menuNameSlice = append(menuNameSlice, v1.Name)
+			}
+		} else {
+			menuNameSlice = append(menuNameSlice, v.Name)
+		}
+	}
+	// 将 []JsClass中的name替换成menuNameSlice中对应的index
+	for i, v := range ws.Class {
+		index := GetIndexFromMenuSliceByName(v.Name, menuNameSlice)
+		if index < 0 {
+			return false
+		} else {
+			ws.Class[i].Name = strconv.Itoa(index)
+		}
+	}
+	// 对ws.Class排序
+	sort.Slice(ws.Class, func(i, j int) bool {
+		return ws.Class[i].Name < ws.Class[j].Name
+	})
+	for i, v := range ws.Class {
+		index, _ := strconv.Atoi(v.Name)
+		ws.Class[i].Name = menuNameSlice[index]
+	}
+	return true
 }
