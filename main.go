@@ -5,65 +5,67 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 type JsLogin struct {
-	Username		string			`json:"username"`
-	Password		string			`json:"password"`
-	Path			string			`json:"path"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Path     string `json:"path"`
 }
 
 type JsConfig struct {
-	Title			string			`json:"title"`
-	Url				string			`json:"url"`
-	Port			int				`json:"port"`
-	Keywords		string			`json:"keywords"`
-	Description		string			`json:"description"`
-	IsFbOpenGraph	bool			`json:"isFbOpenGraph"`
-	IsTwitterCards	bool			`json:"isTwitterCards"`
-	Recordcode		string			`json:"recordcode"`
-	Footer			string			`json:"footer"`
+	Title          string `json:"title"`
+	Url            string `json:"url"`
+	Port           int    `json:"port"`
+	Keywords       string `json:"keywords"`
+	Description    string `json:"description"`
+	IsFbOpenGraph  bool   `json:"isFbOpenGraph"`
+	IsTwitterCards bool   `json:"isTwitterCards"`
+	Recordcode     string `json:"recordcode"`
+	Footer         string `json:"footer"`
 }
 
 type JsMenu struct {
-	Menu			string			`json:"menu"`
-	Name			string			`json:"name"`
-	Icon			string			`json:"icon"`
-	Sub				[]JsMenu		`json:"sub"`
-	Url				string			`json:"url"`
+	Menu string   `json:"menu"`
+	Name string   `json:"name"`
+	Icon string   `json:"icon"`
+	Sub  []JsMenu `json:"sub"`
+	Url  string   `json:"url"`
 }
 
 type JsClassItem struct {
-	Url				string			`json:"url"`
-	Img				string			`json:"img"`
-	Name			string			`json:"name"`
-	Mark			string			`json:"mark"`
+	Url  string `json:"url"`
+	Img  string `json:"img"`
+	Name string `json:"name"`
+	Mark string `json:"mark"`
 }
 
 type JsClass struct {
-	Name			string			`json:"name"`
-	Rows			[]JsClassItem	`json:"rows"`
+	Name string        `json:"name"`
+	Rows []JsClassItem `json:"rows"`
 }
 
 type JsWebStack struct {
-	Menu			[]JsMenu		`json:"Menu"`
-	Class			[]JsClass		`json:"Class"`
+	Menu  []JsMenu  `json:"Menu"`
+	Class []JsClass `json:"Class"`
 }
 
 var (
-	Login			JsLogin
-	Config			JsConfig
-	WebStack		JsWebStack
+	Login    JsLogin
+	Config   JsConfig
+	WebStack JsWebStack
 )
 
 func main() {
@@ -94,7 +96,7 @@ func main() {
 		return
 	}
 
-	r:=gin.Default()
+	r := gin.Default()
 	r.Static("/assets", "./public")
 	r.LoadHTMLGlob("views/**/*")
 	r.GET("/", GetIndex)
@@ -109,43 +111,43 @@ func main() {
 		r.POST("/admin/upload", AuthMiddleWare(), PostAdminUpload)
 	}
 
-	r.Run(fmt.Sprintf("%s:%d",Config.Url, Config.Port))
+	r.Run(fmt.Sprintf("%s:%d", Config.Url, Config.Port))
 }
 
-func GetIndex(c *gin.Context)  {
+func GetIndex(c *gin.Context) {
 	c.HTML(http.StatusOK, "index/index.html", gin.H{
-		"config": Config,
+		"config":   Config,
 		"webstack": WebStack,
 		//"body": template.HTML("<body>I 'm body<body>"),
 	})
 }
 
-func GetAbout(c *gin.Context)  {
+func GetAbout(c *gin.Context) {
 	c.HTML(http.StatusOK, "index/about.html", gin.H{
 		"config": Config,
 	})
 }
 
-func GetAdmin(c *gin.Context)  {
+func GetAdmin(c *gin.Context) {
 	cmd := c.DefaultQuery("cmd", "null")
 	switch cmd {
 	case "logout":
 		c.SetCookie("webstackgo_token", "", -1, "/", strings.Split(c.Request.Host, ":")[0], false, true)
 		c.JSON(http.StatusOK, gin.H{
-			"cmd": cmd,
+			"cmd":     cmd,
 			"message": "退出登陆成功",
-			"error": 0,
+			"error":   0,
 		})
 	case "webstack.json":
 		c.JSON(http.StatusOK, WebStack)
 	case "menu.json":
-		c.JSON(http.StatusOK,WebStack.Menu)
+		c.JSON(http.StatusOK, WebStack.Menu)
 	case "class.json":
 		c.JSON(http.StatusOK, WebStack.Class)
 	default:
 		c.HTML(http.StatusOK, "admin/index.html", gin.H{
-			"login": Login,
-			"config": Config,
+			"login":    Login,
+			"config":   Config,
 			"webstack": WebStack,
 		})
 	}
@@ -157,7 +159,7 @@ func PostAdmin(c *gin.Context) {
 	c.BindJSON(&jsonMap)
 	ret := gin.H{
 		"message": "OK",
-		"error": 0,
+		"error":   0,
 	}
 	var ok bool
 	switch cmd {
@@ -258,25 +260,106 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
 	case "web-add":
-		if IsJsonKey(jsonMap, "class1_name") && IsJsonKey(jsonMap,"class2_name") {
-			classid := GetClassId(jsonMap["class1_name"], jsonMap["class2_name"])
-			fmt.Println(classid, WebStack.Class[classid])
-			if IsJsonKey(jsonMap,"name") && IsJsonKey(jsonMap,"url") && IsJsonKey(jsonMap,"mark") && IsJsonKey(jsonMap,"img") {
-				if AddWebData(classid, jsonMap) {
-					if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
-						ret["message"] = "添加网址成功"
-						ret["error"] = 0
+		if IsJsonKey(jsonMap, "class1_name") && IsJsonKey(jsonMap, "class2_name") {
+			// 新增类别menu后，网址class中没有改类别网址，导致GetClassId返回-1
+			// 先判断class1_name 是否存在
+			class1name := jsonMap["class1_name"]
+			class2name := jsonMap["class2_name"]
+			classIndex := -1
+			if IsExistInMenu(class1name) {
+				if class2name != "" {
+					if IsExistInSubMenu(class2name) {
+						// 检查class中是否已存在class2_name
+						classIndex = IsExistInClass(class2name)
+						if classIndex > -1 {
+							// 存在该class2name的class，直接在row中增加
+							if IsJsonKey(jsonMap, "name") && IsJsonKey(jsonMap, "url") && IsJsonKey(jsonMap, "mark") && IsJsonKey(jsonMap, "img") {
+								if AddWebData(classIndex, jsonMap) {
+									if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
+										ret["message"] = "添加网址成功"
+										ret["error"] = 0
+									} else {
+										ret["message"] = err.Error()
+										ret["error"] = 133
+									}
+								} else {
+									ret["message"] = "无效的分类名称"
+									ret["error"] = 132
+								}
+							} else {
+								ret["message"] = "上报数据不完整"
+								ret["error"] = 131
+							}
+						} else {
+							// 没有该class2name的class，需要新增class，同时增加改row
+							if IsJsonKey(jsonMap, "name") && IsJsonKey(jsonMap, "url") && IsJsonKey(jsonMap, "mark") && IsJsonKey(jsonMap, "img") {
+								if AddNewClass(class2name, jsonMap) {
+									if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
+										ret["message"] = "添加网址成功"
+										ret["error"] = 0
+									} else {
+										ret["message"] = err.Error()
+										ret["error"] = 133
+									}
+								} else {
+									ret["message"] = "无效的分类名称"
+									ret["error"] = 132
+								}
+							} else {
+								ret["message"] = "上报数据不完整"
+								ret["error"] = 131
+							}
+						}
 					} else {
-						ret["message"] = err.Error()
-						ret["error"] = 133
+						ret["message"] = "无效的子分类名称"
+						ret["error"] = 132
 					}
 				} else {
-					ret["message"] = "无效的分类名称"
-					ret["error"] = 132
+					// 检查class中是否已存在class1name
+					classIndex = IsExistInClass(class1name)
+					if classIndex > -1 {
+						// 存在该class1name的class，直接在row中增加
+						if IsJsonKey(jsonMap, "name") && IsJsonKey(jsonMap, "url") && IsJsonKey(jsonMap, "mark") && IsJsonKey(jsonMap, "img") {
+							if AddWebData(classIndex, jsonMap) {
+								if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
+									ret["message"] = "添加网址成功"
+									ret["error"] = 0
+								} else {
+									ret["message"] = err.Error()
+									ret["error"] = 133
+								}
+							} else {
+								ret["message"] = "无效的分类名称"
+								ret["error"] = 132
+							}
+						} else {
+							ret["message"] = "上报数据不完整"
+							ret["error"] = 131
+						}
+					} else {
+						// 没有该class1name的class，需要新增class，同时增加改row
+						if IsJsonKey(jsonMap, "name") && IsJsonKey(jsonMap, "url") && IsJsonKey(jsonMap, "mark") && IsJsonKey(jsonMap, "img") {
+							if AddNewClass(class1name, jsonMap) {
+								if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
+									ret["message"] = "添加网址成功"
+									ret["error"] = 0
+								} else {
+									ret["message"] = err.Error()
+									ret["error"] = 133
+								}
+							} else {
+								ret["message"] = "无效的分类名称"
+								ret["error"] = 132
+							}
+						} else {
+							ret["message"] = "上报数据不完整"
+							ret["error"] = 131
+						}
+					}
 				}
 			} else {
-				ret["message"] = "上报数据不完整"
-				ret["error"] = 131
+				ret["message"] = "无效的主分类名称"
+				ret["error"] = 132
 			}
 		} else {
 			ret["message"] = "上报数据不完整"
@@ -284,10 +367,10 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
 	case "web-edit":
-		if IsJsonKey(jsonMap, "index") && IsJsonKey(jsonMap, "class1_name") && IsJsonKey(jsonMap,"class2_name") {
+		if IsJsonKey(jsonMap, "index") && IsJsonKey(jsonMap, "class1_name") && IsJsonKey(jsonMap, "class2_name") {
 			classid := GetClassId(jsonMap["class1_name"], jsonMap["class2_name"])
 			//fmt.Println(classid, WebStack.Class[classid])
-			if IsJsonKey(jsonMap,"name") && IsJsonKey(jsonMap,"url") && IsJsonKey(jsonMap,"mark") && IsJsonKey(jsonMap,"img") {
+			if IsJsonKey(jsonMap, "name") && IsJsonKey(jsonMap, "url") && IsJsonKey(jsonMap, "mark") && IsJsonKey(jsonMap, "img") {
 				if EditWebData(classid, jsonMap) {
 					if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
 						ret["message"] = "编辑网址成功"
@@ -314,7 +397,7 @@ func PostAdmin(c *gin.Context) {
 		if IsJsonKey(jsonMap, "index") {
 			classid, webid := WebIndex2ID(jsonMap["index"])
 			if DeleteWebData(classid, webid) {
-				isWebDeleteOk = true;
+				isWebDeleteOk = true
 			} else {
 				ret["message"] = "无效的网址源信息"
 				ret["error"] = 151
@@ -323,11 +406,11 @@ func PostAdmin(c *gin.Context) {
 			var indexArray []string
 			err := json.Unmarshal([]byte(jsonMap["indexArray"]), &indexArray)
 			if err == nil {
-				for i:=0; i< len(indexArray); i++ {
+				for i := 0; i < len(indexArray); i++ {
 					classid, webid := WebIndex2ID(indexArray[i])
 					DeleteWebData(classid, webid)
 				}
-				isWebDeleteOk = true;
+				isWebDeleteOk = true
 			} else {
 				ret["message"] = "批量删除数据结构错误。"
 				ret["error"] = 153
@@ -346,8 +429,8 @@ func PostAdmin(c *gin.Context) {
 			}
 		}
 		c.JSON(http.StatusOK, ret)
- 	case "class-add":
-		if IsJsonKey(jsonMap, "name") && IsJsonKey(jsonMap,"icon") && IsJsonKey(jsonMap,"class_up") && IsJsonKey(jsonMap,"class_id") {
+	case "class-add":
+		if IsJsonKey(jsonMap, "name") && IsJsonKey(jsonMap, "icon") && IsJsonKey(jsonMap, "class_up") && IsJsonKey(jsonMap, "class_id") {
 			classup, _ := strconv.Atoi(jsonMap["class_up"])
 			if CheckClassName(jsonMap["name"], "") == false {
 				ret["message"] = "分类名称冲突，请更改分类名称。"
@@ -370,9 +453,9 @@ func PostAdmin(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, ret)
 	case "class-edit":
-		if IsJsonKey(jsonMap, "name") && IsJsonKey(jsonMap,"icon") && IsJsonKey(jsonMap,"class_up") && IsJsonKey(jsonMap,"class_id") {
+		if IsJsonKey(jsonMap, "name") && IsJsonKey(jsonMap, "icon") && IsJsonKey(jsonMap, "class_up") && IsJsonKey(jsonMap, "class_id") {
 			classup, _ := strconv.Atoi(jsonMap["class_up"])
-			if CheckClassName(jsonMap["name"], jsonMap["class_id"]) == false {
+			if !CheckClassName(jsonMap["name"], jsonMap["class_id"]) {
 				ret["message"] = "分类名称冲突，请更改分类名称。"
 				ret["error"] = 172
 			} else if EditClassData(jsonMap["class_id"], classup, jsonMap["name"], jsonMap["icon"]) {
@@ -396,7 +479,7 @@ func PostAdmin(c *gin.Context) {
 		isClassDeleteOk := false
 		if IsJsonKey(jsonMap, "index") {
 			if DeleteClassData(jsonMap["index"]) {
-				isClassDeleteOk = true;
+				isClassDeleteOk = true
 			} else {
 				ret["message"] = "无效的网址源信息"
 				ret["error"] = 181
@@ -414,7 +497,7 @@ func PostAdmin(c *gin.Context) {
 		c.JSON(http.StatusOK, ret)
 	case "class-sort":
 		if IsJsonKey(jsonMap, "webStack") {
-			if LoadJsonString([]byte(jsonMap["webStack"]) ,&WebStack) == nil {
+			if LoadJsonString([]byte(jsonMap["webStack"]), &WebStack) == nil {
 				if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
 					ret["message"] = "保存分类排序成功"
 					ret["error"] = 0
@@ -431,12 +514,83 @@ func PostAdmin(c *gin.Context) {
 			ret["error"] = 190
 		}
 		c.JSON(http.StatusOK, ret)
+	case "web-sort-by-class":
+		// 检查[]class中的name是否有不在nemu中的
+
+		// 根据当前WebStack中的Menu及子Menu顺序，排序Class clice 中的元素顺序
+		if WebSortByClass(WebStack) {
+			// 保存webstack
+			if err := SaveJsonFile("./json/webstack.json", &WebStack); err == nil {
+				ret["message"] = "保存网址排序成功"
+				ret["error"] = 0
+			} else {
+				ret["message"] = err.Error()
+				ret["error"] = 195
+			}
+		} else {
+			ret["message"] = "网页依据Menu排序失败"
+			ret["error"] = 194
+		}
+		c.JSON(http.StatusOK, ret)
 	default:
 		c.JSON(http.StatusFound, gin.H{
 			"message": "Error 302",
-			"error": 302,
+			"error":   302,
 		})
 	}
+}
+
+func AddNewClass(classname string, classData map[string]string) bool {
+	if len(WebStack.Class) < 0 {
+		return false
+	}
+	WebStack.Class = append(WebStack.Class, JsClass{
+		Name: classname,
+		Rows: []JsClassItem{{
+			Url:  classData["url"],
+			Img:  classData["img"],
+			Name: classData["name"],
+			Mark: classData["mark"],
+		}},
+	})
+	return true
+}
+
+func IsExistInClass(classname string) int {
+	var index int = -1
+	for i, class := range WebStack.Class {
+		if class.Name == classname {
+			index = i
+			break
+		}
+	}
+	return index
+}
+
+func IsExistInMenu(menuname string) bool {
+	var b bool = false
+	for _, menu := range WebStack.Menu {
+		if menu.Name == menuname {
+			b = true
+			break
+		}
+	}
+	return b
+}
+
+func IsExistInSubMenu(submenuname string) bool {
+	b := false
+	for _, menu := range WebStack.Menu {
+		if len(menu.Sub) > 0 {
+			for _, submenu := range menu.Sub {
+				if submenu.Name == submenuname {
+					b = true
+					break
+				}
+			}
+		}
+	}
+	return b
 }
 
 func PostAdminUpload(c *gin.Context) {
@@ -445,25 +599,25 @@ func PostAdminUpload(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
-			"error": 801,
+			"error":   801,
 		})
 		return
 	}
 
 	//获取文件后缀
 	existing := strings.ToLower(Ext(file.Filename))
-	if existing == ""{
+	if existing == "" {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "文件类型错误，无法上传。",
-			"error": 802,
+			"error":   802,
 		})
 		return
 	}
-	extStrSlice := []string{".jpg",".png","gif"}
+	extStrSlice := []string{".jpg", ".png", "gif"}
 	if !ContainArray(existing, extStrSlice) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "文件类型错误，请上传图片文件（jpg、png、gif）。",
-			"error": 803,
+			"error":   803,
 		})
 		return
 	}
@@ -480,34 +634,34 @@ func PostAdminUpload(c *gin.Context) {
 	if err := c.SaveUploadedFile(file, path); err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
-			"error": 804,
+			"error":   804,
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"url": "../assets/images/uploads/" + file.Filename,
+		"url":     "../assets/images/uploads/" + file.Filename,
 		"message": "upload file success.",
-		"error": 0,
+		"error":   0,
 	})
 }
 
-func GetLogin(c *gin.Context)  {
+func GetLogin(c *gin.Context) {
 	if c.FullPath() == Login.Path {
 		c.HTML(http.StatusOK, "admin/login.html", gin.H{
-			"config": Config,
+			"config":  Config,
 			"success": false,
 			"message": "",
 		})
 	} else {
 		c.HTML(http.StatusUnauthorized, "admin/login.html", gin.H{
-			"error": 401,
+			"error":   401,
 			"message": "The login page has been modified.",
 		})
 	}
 }
 
-func PostLogin(c *gin.Context)  {
+func PostLogin(c *gin.Context) {
 	username := strings.TrimSpace(c.DefaultPostForm("username", ""))
 	password := GetMD5(strings.TrimSpace(c.DefaultPostForm("password", "webstackgo")))
 	if username == Login.Username && password == Login.Password {
@@ -516,13 +670,13 @@ func PostLogin(c *gin.Context)  {
 		fmt.Println(token, now)
 		c.SetCookie("webstackgo_token", token, 7200, "/", strings.Split(c.Request.Host, ":")[0], false, true)
 		c.HTML(http.StatusOK, "admin/login.html", gin.H{
-			"config": Config,
+			"config":  Config,
 			"success": true,
 			"message": "登陆成功！",
 		})
 	} else {
 		c.HTML(http.StatusUnauthorized, "admin/login.html", gin.H{
-			"config": Config,
+			"config":  Config,
 			"success": false,
 			"message": "登陆失败：用户名或密码错误。",
 		})
@@ -537,8 +691,8 @@ func AuthMiddleWare() gin.HandlerFunc {
 			arr := strings.Split(token, "|")
 			//fmt.Println(token, arr)
 			if len(arr) == 2 {
-				if intNow, err2 := strconv.ParseInt(arr[1], 10, 64); err2==nil && token==GetToken(Login.Username, Login.Password, intNow) {
-					if time.Now().Unix() - intNow < 3600 {
+				if intNow, err2 := strconv.ParseInt(arr[1], 10, 64); err2 == nil && token == GetToken(Login.Username, Login.Password, intNow) {
+					if time.Now().Unix()-intNow < 3600 {
 						token = GetToken(Login.Username, Login.Password, time.Now().Unix())
 						c.SetCookie("webstackgo_token", token, 7200, "/", strings.Split(c.Request.Host, ":")[0], false, true)
 					}
@@ -572,7 +726,7 @@ func GetMD5(str string) string {
 }
 
 func GetToken(username, password string, now int64) string {
-	return fmt.Sprintf("%s|%d",GetMD5(fmt.Sprintf("%s|%s|%d", username, password, now)), now)
+	return fmt.Sprintf("%s|%d", GetMD5(fmt.Sprintf("%s|%s|%d", username, password, now)), now)
 }
 
 func SaveFile(path string, data []byte) error {
@@ -614,28 +768,28 @@ func LoadJsonFile(path string, obj interface{}) error {
 	return LoadJsonString(content, obj)
 }
 
-func WebIndex2ID(index string) (int,int) {
+func WebIndex2ID(index string) (int, int) {
 	arrIndex := strings.Split(index, "-")
 	classId := -1
 	webId := -1
 	if len(arrIndex) == 2 {
-		num1 , _ := strconv.Atoi(arrIndex[0])
+		num1, _ := strconv.Atoi(arrIndex[0])
 		webId, _ = strconv.Atoi(arrIndex[1])
-		if(num1 >= 0 && num1 < len(WebStack.Menu)) {
+		if num1 >= 0 && num1 < len(WebStack.Menu) {
 			classId = GetClassId(WebStack.Menu[num1].Name, "")
 		}
-	} else if(len(arrIndex) == 3) {
-		num1 , _ := strconv.Atoi(arrIndex[0])
-		num2 , _ := strconv.Atoi(arrIndex[1])
+	} else if len(arrIndex) == 3 {
+		num1, _ := strconv.Atoi(arrIndex[0])
+		num2, _ := strconv.Atoi(arrIndex[1])
 		webId, _ = strconv.Atoi(arrIndex[2])
-		if(num1 >= 0 && num1 < len(WebStack.Menu)) {
+		if num1 >= 0 && num1 < len(WebStack.Menu) {
 			classId = GetClassId(WebStack.Menu[num1].Name, WebStack.Menu[num1].Sub[num2].Name)
 		}
 	}
 	return classId, webId
 }
 
-func ClassIndex2ID(index string) (int,int) {
+func ClassIndex2ID(index string) (int, int) {
 	arrIndex := strings.Split(index, "-")
 	classUp := -1
 	classId := -1
@@ -652,20 +806,20 @@ func CheckClassName(name string, index string) bool {
 	if len(strings.TrimSpace(name)) == 0 {
 		return false
 	}
-	classup,classid := -1,-1
+	classup, classid := -1, -1
 	if index != "" {
-		classup,classid = ClassIndex2ID(index)
+		classup, classid = ClassIndex2ID(index)
 	}
 	for id, menu := range WebStack.Menu {
 		if menu.Name == name {
-			if(-1 == classup && id == classid) {
+			if -1 == classup && id == classid {
 				continue
 			}
 			return false
 		} else {
 			for subId, subMenu := range menu.Sub {
 				if subMenu.Name == name {
-					if(id == classup && subId == classid) {
+					if id == classup && subId == classid {
 						continue
 					}
 					return false
@@ -699,7 +853,7 @@ func GetClassId(name1 string, name2 string) int {
 			} else {
 				name = name1
 			}
-			break;
+			break
 		}
 		index += len(menu.Sub)
 	}
@@ -727,7 +881,7 @@ func AddWebData(classid int, classData map[string]string) bool {
 }
 
 func DeleteWebData(classid int, webid int) bool {
-	if classid >= 0 && webid >= 0 && classid < len(WebStack.Class) && webid < len(WebStack.Class[classid].Rows)  {
+	if classid >= 0 && webid >= 0 && classid < len(WebStack.Class) && webid < len(WebStack.Class[classid].Rows) {
 		WebStack.Class[classid].Rows = append(WebStack.Class[classid].Rows[:webid], WebStack.Class[classid].Rows[webid+1:]...)
 		return true
 	} else {
@@ -761,7 +915,7 @@ func AddClassData(classup int, classname string, classicon string) bool {
 			Url:  "#" + classname,
 		})
 		return true
-	} else if classup >=0 && classup < len(WebStack.Menu) {
+	} else if classup >= 0 && classup < len(WebStack.Menu) {
 		WebStack.Menu[classup].Sub = append(WebStack.Menu[classup].Sub, JsMenu{
 			Menu: "smooth",
 			Name: classname,
@@ -800,7 +954,7 @@ func EditClassData(classIndex string, classup int, classname string, classicon s
 		} else {
 			return false
 		}
-	} else{
+	} else {
 		if AddClassData(classup, classname, classicon) {
 			return DeleteClassData(classIndex)
 		} else {
@@ -837,4 +991,65 @@ func Ext(path string) string {
 		}
 	}
 	return ""
+}
+
+// 取得所有menu+子menu的个数
+func GetMenuCount(ws JsWebStack) int {
+	count := 0
+	for _, v := range ws.Menu {
+		if len(v.Sub) > 0 {
+			count += len(v.Sub)
+		} else {
+			count++
+		}
+	}
+	return count
+}
+
+func GetIndexFromMenuSliceByName(name string, ms []string) int {
+	for i, v := range ms {
+		if v == name {
+			return i
+		} else {
+			continue
+		}
+	}
+	return -1
+}
+
+func WebSortByClass(ws JsWebStack) bool {
+	// 取得所有menu+子menu的个数
+	count := GetMenuCount(ws)
+	if count == 0 {
+		return false
+	}
+	// 根据当前menu排序，取得所有分类menu的name排序id
+	var menuNameSlice = make([]string, 0, count)
+	for _, v := range ws.Menu {
+		if len(v.Sub) > 0 {
+			for _, v1 := range v.Sub {
+				menuNameSlice = append(menuNameSlice, v1.Name)
+			}
+		} else {
+			menuNameSlice = append(menuNameSlice, v.Name)
+		}
+	}
+	// 将 []JsClass中的name替换成menuNameSlice中对应的index
+	for i, v := range ws.Class {
+		index := GetIndexFromMenuSliceByName(v.Name, menuNameSlice)
+		if index < 0 {
+			return false
+		} else {
+			ws.Class[i].Name = strconv.Itoa(index)
+		}
+	}
+	// 对ws.Class排序
+	sort.Slice(ws.Class, func(i, j int) bool {
+		return ws.Class[i].Name < ws.Class[j].Name
+	})
+	for i, v := range ws.Class {
+		index, _ := strconv.Atoi(v.Name)
+		ws.Class[i].Name = menuNameSlice[index]
+	}
+	return true
 }

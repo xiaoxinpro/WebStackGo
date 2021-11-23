@@ -1,20 +1,21 @@
 FROM golang:alpine AS builder
-WORKDIR /app/
-RUN apk --no-cache --no-progress add git \
+WORKDIR /build/
+COPY . . 
+RUN apk --update --no-cache --no-progress add git \
     && go env -w GO111MODULE=on \
     && go env -w GOPROXY=https://goproxy.cn,direct \
-    && git clone https://github.com/Schr0dingerCat/WebStackGo.git \
-    && cd WebStackGo \
+    && go build -o WebStackGo main.go \
     && rm public/webstack_logos.sketch \
-    && go build -o WebStackGo main.go
+    && mkdir /build/app/ \
+    && cp -rf /build/json /build/app/ \
+    && cp -rf /build/public /build/app/ \
+    && cp -rf /build/views /build/app/ \
+    && cp /build/WebStackGo /build/app/
 
 FROM alpine:latest
 
 WORKDIR /app
-COPY --from=builder /app/WebStackGo/WebStackGo /app/WebStackGo
-COPY --from=builder /app/WebStackGo/json /app/json
-COPY --from=builder /app/WebStackGo/public /app/public
-COPY --from=builder /app/WebStackGo/views /app/views
+COPY --from=builder /build/app/ /app/
 
 EXPOSE 2802
 
